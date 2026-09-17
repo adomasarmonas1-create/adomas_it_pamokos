@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NETVILA 5 – Failų chaoso misija</title>
+<style>
+:root{--bg:#102017;--panel:#e9f0b7;--ink:#17231a;--dark:#0b130e;--mid:#294b32;--gold:#ffd84d;--good:#7fc46b;--bad:#ef826e;--paper:#f7f4cf}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:"Courier New",monospace;background:radial-gradient(circle at top,#29462f 0,#102017 45%,#09100c 100%);color:#eef5d0}
+body{display:flex;justify-content:center}.wrap{width:min(1000px,100%);padding:12px}.shell{background:#1d3424;border:4px solid #070d09;border-radius:18px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.45)}
+.top{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;background:#101e15;padding:12px;border-bottom:4px solid #070d09}.brand{font-weight:900;letter-spacing:.7px}.chip{background:#31523a;border:2px solid #070d09;border-radius:7px;padding:7px 10px;font-weight:900;white-space:nowrap}
+.screen{padding:18px;min-height:610px;background:linear-gradient(#173020,#102019)}.card{background:var(--panel);color:var(--ink);border:4px solid #101a13;border-radius:8px;box-shadow:8px 8px 0 rgba(0,0,0,.26);padding:18px;max-width:800px;margin:0 auto 16px}.card h1,.card h2{margin:0 0 10px}.muted{color:#52604e}.mission{display:inline-block;background:#26452e;color:#f3f8d3;padding:5px 8px;border:2px solid #101a13;margin-bottom:10px;font-weight:900}.btn{border:3px solid #101a13;background:#dce7a3;color:#17231a;padding:11px 14px;border-radius:5px;font:inherit;font-weight:900;cursor:pointer;box-shadow:0 4px 0 #101a13}.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #101a13}.btn.good{background:var(--good)}.btn.bad{background:var(--bad)}.btn.alt{background:#9bc184}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.choices{display:grid;gap:10px;margin-top:14px}.choice{text-align:left;width:100%}.choice.correct{background:var(--good)}.choice.wrong{background:var(--bad)}
+.filebox{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:14px}.file{background:var(--paper);border:3px solid #152219;border-radius:7px;padding:14px;text-align:center;font-weight:900;cursor:pointer;min-height:104px;display:flex;flex-direction:column;justify-content:center;gap:6px}.file.selected{outline:5px solid var(--gold);transform:translateY(-2px)}.icon{font-size:34px}.folders{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:16px}.folder{background:#d7c46a;border:3px solid #152219;border-radius:6px;padding:12px;text-align:center;font-weight:900;cursor:pointer}.folder:hover{filter:brightness(1.06)}
+.progress{height:16px;background:#0b140e;border:2px solid #070d09;border-radius:10px;overflow:hidden;margin:0 0 14px}.bar{height:100%;width:0;background:var(--gold);transition:.25s}.feedback{margin-top:12px;padding:10px;border:2px dashed #607255;background:#f6f0c8;display:none}.feedback.show{display:block}.result{font-size:clamp(30px,7vw,60px);text-align:center;margin:20px 0}.stars{font-size:40px;text-align:center}.tiny{font-size:12px;color:#b8ca9d;text-align:center;padding:0 10px 12px}.hidden{display:none!important}@media(max-width:640px){.top{grid-template-columns:1fr 1fr}.brand{grid-column:1/-1}.screen{padding:10px;min-height:640px}.card{padding:14px}}
+</style>
+</head>
+<body>
+<div class="wrap"><div class="shell">
+<div class="top"><div class="brand">⚡ NETVILA 5 // FAILŲ CHAOSO MISIJA</div><div class="chip" id="level">Misija 1/4</div><div class="chip" id="xp">XP 0</div></div>
+<div class="screen"><div class="progress"><div id="bar" class="bar"></div></div><div id="game"></div></div>
+<div class="tiny">5 klasė • failų tipai • aplankai • pavadinimai • struktūra</div>
+</div></div>
+<script>
+const game=document.getElementById('game'),xpEl=document.getElementById('xp'),levelEl=document.getElementById('level'),bar=document.getElementById('bar');
+let xp=0,step=0,q=0,selected=null,sorted=0;
+const typeQs=[
+{f:'kelione.jpg',i:'🖼️',q:'Koks tai failas?',o:['Nuotrauka','Dokumentas','Archyvas'],a:0,e:'.jpg dažniausiai yra paveikslėlio / nuotraukos formatas.'},
+{f:'referatas.docx',i:'📝',q:'Koks tai failas?',o:['Skaidrės','Word dokumentas','Lentelė'],a:1,e:'.docx – Word dokumento formatas.'},
+{f:'biudzetas.xlsx',i:'📊',q:'Koks tai failas?',o:['Excel lentelė','PDF','Nuotrauka'],a:0,e:'.xlsx – Excel skaičiuoklės formatas.'},
+{f:'projektas.pptx',i:'📽️',q:'Koks tai failas?',o:['Archyvas','PowerPoint skaidrės','Tekstas'],a:1,e:'.pptx – PowerPoint pateikties formatas.'},
+{f:'medziaga.zip',i:'🗜️',q:'Kam skirtas ZIP?',o:['Sujungti / suspausti failus','Piešti','Rašyti laiškus'],a:0,e:'.zip – archyvas, kuriame galima laikyti kelis failus ar aplankus.'},
+{f:'taisykles.pdf',i:'📄',q:'Koks tai failas?',o:['PDF dokumentas','Garso failas','Aplankas'],a:0,e:'.pdf dažnai naudojamas dokumentui peržiūrėti beveik nekeičiant jo vaizdo.'}
+];
+const sortFiles=[
+{n:'mano_katinas.jpg',i:'🖼️',t:'Nuotraukos'},
+{n:'matematika.xlsx',i:'📊',t:'Lentelės'},
+{n:'istorijos_pristatymas.pptx',i:'📽️',t:'Skaidrės'},
+{n:'namu_darbas.docx',i:'📝',t:'Dokumentai'},
+{n:'projekto_failai.zip',i:'🗜️',t:'Archyvai'}
+];
+const nameQs=[
+{q:'Kurį pavadinimą lengviausia suprasti po mėnesio?',o:['Naujas dokumentas (7).docx','5A_Gamtos_projektas_Adomas.docx','asdf.docx'],a:1,e:'Geras pavadinimas pasako, kas tai per failas.'},
+{q:'Kuris aplankų planas tvarkingiausias?',o:['Visi failai darbalaukyje','Mokykla → 5 klasė → IT → Projektai','Aplankas1 → Aplankas2 → Naujas aplankas'],a:1,e:'Struktūra turi padėti failą rasti, o ne jį paslėpti.'},
+{q:'Kur geriausia laikyti klasės nuotrauką?',o:['Nuotraukos','Dokumentai','Archyvai'],a:0,e:'Failo vieta turi atitikti jo paskirtį.'}
+];
+const bossQs=[
+{q:'Gavai „projektas.zip“. Ką pirmiausia pagalvoji?',o:['Tai tikriausiai archyvas su keliais failais','Tai nuotrauka','Tai interneto puslapis'],a:0},
+{q:'Turi „IMG_4837.jpg“. Ką verta padaryti prieš siunčiant mokytojui?',o:['Pervadinti prasmingai','Pakeisti į .exe','Įdėti į Atsisiuntimai ir pamiršti'],a:0},
+{q:'Kodėl failų plėtiniai svarbūs?',o:['Padeda suprasti failo tipą ir kuo jį atidaryti','Tik dėl grožio','Kad failas užimtų daugiau vietos'],a:0}
+];
+function hud(){xpEl.textContent='XP '+xp;bar.style.width=Math.min(100,(step/4)*100)+'%';levelEl.textContent='Misija '+Math.min(step+1,4)+'/4'}
+function addXP(n){xp+=n;hud()}
+function start(){step=0;q=0;hud();renderType()}
+function splash(){game.innerHTML=`<div class="card"><span class="mission">5 KLASĖ</span><h1>NETVILOS FAILŲ CHAOSAS</h1><p>Netvilos serverį užtvindė netvarkingi failai. Tavo darbas – atpažinti failų tipus, sudėti juos į tinkamus aplankus, sutvarkyti pavadinimus ir įveikti paskutinį BOSS testą.</p><p><b>Tikslas:</b> surink kuo daugiau XP ir atkurti tvarką.</p><div class="actions"><button class="btn" onclick="start()">PRADĖTI MISIJĄ →</button></div></div>`}
+function renderType(){hud();const x=typeQs[q];game.innerHTML=`<div class="card"><span class="mission">1 MISIJA – FAILŲ DETEKTYVAS</span><h2>${x.i} ${x.f}</h2><p>${x.q}</p><div class="choices">${x.o.map((o,i)=>`<button class="btn choice" onclick="answerType(${i},this)">${o}</button>`).join('')}</div><div id="fb" class="feedback"></div></div>`}
+function answerType(i,b){document.querySelectorAll('.choice').forEach(x=>x.disabled=true);const x=typeQs[q],fb=document.getElementById('fb');if(i===x.a){b.classList.add('correct');addXP(10);fb.innerHTML='✅ Teisingai! '+x.e}else{b.classList.add('wrong');document.querySelectorAll('.choice')[x.a].classList.add('correct');fb.innerHTML='❌ Ne visai. '+x.e}fb.classList.add('show');setTimeout(()=>{q++;if(q<typeQs.length)renderType();else{step=1;renderSort()}},750)}
+function renderSort(){hud();selected=null;sorted=0;game.innerHTML=`<div class="card"><span class="mission">2 MISIJA – SUTVARKYK CHAOSĄ</span><h2>Pasirink failą, tada jo aplanką</h2><p class="muted">Kiekvieną failą padėk ten, kur jį būtų logiška rasti.</p><div class="filebox" id="files">${sortFiles.map((f,i)=>`<div class="file" id="f${i}" onclick="pick(${i})"><div class="icon">${f.i}</div>${f.n}</div>`).join('')}</div><div class="folders">${['Dokumentai','Skaidrės','Lentelės','Nuotraukos','Archyvai'].map(n=>`<div class="folder" onclick="dropTo('${n}')">📁 ${n}</div>`).join('')}</div><div id="fb" class="feedback"></div></div>`}
+function pick(i){if(document.getElementById('f'+i).classList.contains('hidden'))return;selected=i;document.querySelectorAll('.file').forEach(x=>x.classList.remove('selected'));document.getElementById('f'+i).classList.add('selected')}
+function dropTo(folder){const fb=document.getElementById('fb');if(selected===null){fb.textContent='Pirmiausia pasirink failą.';fb.classList.add('show');return}const f=sortFiles[selected];if(f.t===folder){document.getElementById('f'+selected).classList.add('hidden');addXP(12);sorted++;fb.textContent='✅ '+f.n+' → '+folder;selected=null;if(sorted===sortFiles.length)setTimeout(()=>{step=2;q=0;renderNames()},650)}else{fb.textContent='❌ Pagalvok: kur logiškiausia būtų ieškoti '+f.n+'?'}fb.classList.add('show')}
+function renderNames(){hud();const x=nameQs[q];game.innerHTML=`<div class="card"><span class="mission">3 MISIJA – TVARKOS MEISTRAS</span><h2>${x.q}</h2><div class="choices">${x.o.map((o,i)=>`<button class="btn choice" onclick="answerName(${i},this)">${o}</button>`).join('')}</div><div id="fb" class="feedback"></div></div>`}
+function answerName(i,b){document.querySelectorAll('.choice').forEach(x=>x.disabled=true);const x=nameQs[q],fb=document.getElementById('fb');if(i===x.a){b.classList.add('correct');addXP(15);fb.innerHTML='✅ '+x.e}else{b.classList.add('wrong');document.querySelectorAll('.choice')[x.a].classList.add('correct');fb.innerHTML='❌ '+x.e}fb.classList.add('show');setTimeout(()=>{q++;if(q<nameQs.length)renderNames();else{step=3;q=0;renderBoss()}},800)}
+function renderBoss(){hud();const x=bossQs[q];game.innerHTML=`<div class="card"><span class="mission">4 MISIJA – BOSS</span><h2>⚠️ FINALINIS NETVILOS TERMINALAS</h2><p><b>${x.q}</b></p><div class="choices">${x.o.map((o,i)=>`<button class="btn choice" onclick="answerBoss(${i},this)">${o}</button>`).join('')}</div><div id="fb" class="feedback"></div></div>`}
+function answerBoss(i,b){document.querySelectorAll('.choice').forEach(x=>x.disabled=true);const x=bossQs[q],fb=document.getElementById('fb');if(i===x.a){b.classList.add('correct');addXP(20);fb.textContent='✅ BOSS pažeistas!'}else{b.classList.add('wrong');document.querySelectorAll('.choice')[x.a].classList.add('correct');fb.textContent='❌ BOSS atsilaikė, bet teisingas atsakymas pažymėtas.'}fb.classList.add('show');setTimeout(()=>{q++;if(q<bossQs.length)renderBoss();else finish()},800)}
+function finish(){step=4;hud();const max=60+60+45+60;const p=Math.round(xp/max*100);const stars=p>=85?'⭐⭐⭐':p>=60?'⭐⭐':'⭐';game.innerHTML=`<div class="card"><span class="mission">MISIJA BAIGTA</span><div class="result">NETVILA IŠGELBĖTA!</div><div class="stars">${stars}</div><h2 style="text-align:center">${xp} XP • ${p}%</h2><p style="text-align:center">Dabar tu moki atpažinti pagrindinius failų tipus, pasirinkti logišką aplanką ir kurti prasmingus failų pavadinimus.</p><div class="actions" style="justify-content:center"><button class="btn alt" onclick="xp=0;step=0;q=0;splash();hud()">ŽAISTI DAR KARTĄ</button></div></div>`}
+splash();hud();
+</script>
+</body>
+</html>
