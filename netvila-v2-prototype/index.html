@@ -35,10 +35,10 @@ button,input{font:inherit}
 #modal{top:5%;bottom:auto;max-height:90%;overflow:auto}
 .hud{position:absolute;top:4px;left:4px;background:#fff7d6e8;border:2px solid var(--line);padding:2px 4px;font-size:10px;font-weight:900}
 .right{left:auto;right:4px}
-.compass{position:absolute;top:4px;left:50%;transform:translateX(-50%);width:46px;height:38px;background:#fff7d6e8;border:2px solid var(--line);font-size:8px;font-weight:900;z-index:3}
+.compass{position:absolute;top:22px;left:5px;width:42px;height:31px;background:transparent;border:0;font-size:8px;font-weight:900;z-index:3;color:#17212a;text-shadow:1px 1px 0 #fff7d6,-1px -1px 0 #fff7d6}
 .compass span{position:absolute;line-height:1}
-#cN{top:2px;left:20px}#cS{bottom:2px;left:20px}#cW{top:15px;left:4px}#cE{top:15px;right:4px}#cDir{top:12px;left:19px;font-size:13px}
-.compass .active{color:#d95d39;text-decoration:underline}
+#cN{top:0;left:18px}#cS{bottom:0;left:18px}#cW{top:11px;left:1px}#cE{top:11px;right:1px}#cDir{top:8px;left:16px;font-size:14px}
+.compass .active{color:#d95d39}
 .answers{display:grid;gap:5px}
 .ans{text-align:left}
 .fb{min-height:22px;font-weight:900;margin-top:6px;padding:4px}
@@ -55,6 +55,12 @@ pre.show{display:block}
 .dragItem.dragging{opacity:.45}
 .targetGrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .targetBtn{min-height:54px;text-align:left}
+.routeMap{display:grid;grid-template-columns:repeat(4,32px);grid-template-rows:repeat(4,32px);gap:2px;justify-content:center;margin:8px auto}
+.routeCell{width:32px;height:32px;border:2px solid #17212a;background:#e9f4cf;display:grid;place-items:center;font-size:18px;font-weight:900}
+.routeCell.wall{background:#6f747c;color:#fff}
+.routeCell.start{background:#cfe8ff}.routeCell.goal{background:#ffe08a}
+.routeControls{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;margin:8px 0}
+.routeSeq{min-height:28px;border:2px dashed #17212a;padding:5px;text-align:center;background:#fff}
 .enemyHint{color:var(--bad);font-weight:900}
 @media(max-width:820px){.wrap{grid-template-columns:1fr}.side{order:-1}.chars{grid-template-columns:repeat(2,1fr)}}
 </style>
@@ -62,7 +68,7 @@ pre.show{display:block}
 <body>
 <div class="wrap">
   <div class="gb">
-    <div class="brand">NETVILA V2 // BUILD 0.3</div>
+    <div class="brand">NETVILA V2 // BUILD 0.4</div>
     <div class="screen">
       <canvas id="c" width="160" height="144"></canvas>
       <div class="hud" id="hud">HP ♥♥♥</div>
@@ -97,8 +103,8 @@ pre.show{display:block}
     </div>
 
     <div class="panel small">
-      <b>Build 0.3</b>
-      <p>Kompasas · dvigubo paspaudimo sprintas · neapeinami vartai · pasiekiama boss arena · feedback uždaromas tik su Z · 4 užduočių tipai.</p>
+      <b>Build 0.4</b>
+      <p>Kompasas po gyvybėmis · skirtingi lygių žemėlapiai · skrynią saugo priešas · vartams reikia rakto IR visų priešų · klaidingas klausimas grįžta į eilės galą · roboto mini žemėlapis.</p>
       <div class="legend">
         <div>🏠 miestelis</div><div>🌲 miškas</div>
         <div>🌊 upė</div><div>🌼 pieva</div>
@@ -199,12 +205,16 @@ var taskBank=[
     why:"Z šiame prototipe veikia kaip Game Boy A mygtukas."
   },
   {
-    type:"sort",
+    type:"route",
     skill:"algoritmai",
-    q:"Sudėliok roboto komandų seką.",
-    items:["→","↓","→","↑"],
-    correct:["→","↓","→","↑"],
-    why:"Algoritme svarbi tiksli veiksmų tvarka."
+    q:"Nuvesk robotą 🤖 iki vėliavos 🚩. Sudėliok komandų seką pagal mini žemėlapį.",
+    grid:{
+      start:[0,3],
+      goal:[3,0],
+      walls:[[1,2],[2,2]]
+    },
+    correct:["↑","↑","→","→","→","↑"],
+    why:"Komandų seka turi tiksliai atkartoti kelią žemėlapyje."
   },
   {
     type:"target",
@@ -217,75 +227,108 @@ var taskBank=[
 ];
 
 function makeWorld(seed){
-  var w=44,h=28,a=[],x,y;
-  for(y=0;y<h;y++){
-    a[y]=[];
-    for(x=0;x<w;x++) a[y][x]=0;
-  }
+  var w=44,h=28,a=[],x,y,variant=(seed-1)%6;
+  for(y=0;y<h;y++){a[y]=[];for(x=0;x<w;x++)a[y][x]=0}
 
-  // border forest
+  // universal border
   for(x=0;x<w;x++){a[0][x]=1;a[1][x]=1;a[h-1][x]=1}
   for(y=0;y<h;y++){a[y][0]=1;a[y][1]=1;a[y][w-1]=1}
 
-  // river
-  for(y=2;y<h-1;y++){
-    a[y][20]=3;a[y][21]=3;
-    if(y%4===0)a[y][19]=9;
+  // Six visibly different level layouts.
+  if(variant===0){
+    for(y=2;y<h-1;y++){a[y][20]=3;a[y][21]=3}
+    for(y=13;y<=15;y++){a[y][20]=7;a[y][21]=7}
+    for(y=4;y<=11;y++)for(x=3;x<=7;x++)if((x+y)%3)a[y][x]=1;
+    for(y=5;y<=11;y++)for(x=9;x<=16;x++)if((x+y)%3===0)a[y][x]=4;
+  }else if(variant===1){
+    for(x=4;x<=19;x++){a[8][x]=3;a[9][x]=3}
+    for(x=10;x<=12;x++){a[8][x]=7;a[9][x]=7}
+    for(y=3;y<=13;y++)for(x=15;x<=19;x++)if((x+y)%4!==0)a[y][x]=1;
+    for(y=17;y<=24;y++)for(x=3;x<=18;x++)if((x*2+y)%5===0)a[y][x]=4;
+  }else if(variant===2){
+    for(y=3;y<=24;y++){a[y][17]=3;a[y][18]=3}
+    for(y=6;y<=8;y++){a[y][17]=7;a[y][18]=7}
+    for(y=18;y<=20;y++){a[y][17]=7;a[y][18]=7}
+    for(y=3;y<=12;y++)for(x=3;x<=10;x++)if((x+y)%4!==1)a[y][x]=1;
+    for(y=16;y<=24;y++)for(x=10;x<=20;x++)if((x+y)%4===0)a[y][x]=4;
+  }else if(variant===3){
+    for(y=4;y<=23;y++)for(x=3;x<=20;x++)if((x+y)%7===0)a[y][x]=6;
+    for(y=4;y<=10;y++)for(x=11;x<=18;x++)a[y][x]=9;
+    for(y=17;y<=24;y++)for(x=4;x<=12;x++)if((x+y)%2===0)a[y][x]=4;
+  }else if(variant===4){
+    for(y=3;y<=12;y++)for(x=3;x<=18;x++)if((x+y)%5!==0)a[y][x]=8;
+    for(x=5;x<=18;x++)a[12][x]=2;
+    for(y=17;y<=25;y++)for(x=4;x<=19;x++)if((x*3+y)%6===0)a[y][x]=6;
+    a[10][10]=10;a[10][11]=10;
+  }else{
+    for(y=3;y<=25;y++){a[y][18]=3;a[y][19]=3}
+    for(y=12;y<=14;y++){a[y][18]=7;a[y][19]=7}
+    for(y=4;y<=12;y++)for(x=3;x<=9;x++)if((x+y)%3!==0)a[y][x]=1;
+    for(y=17;y<=24;y++)for(x=8;x<=19;x++)if((x+y)%3===0)a[y][x]=6;
   }
 
-  // bridge
-  for(y=13;y<=15;y++){a[y][20]=7;a[y][21]=7}
+  // west-side village paths
+  for(x=3;x<=23;x++){a[14][x]=2;a[15][x]=2}
+  for(y=7;y<=23;y++)a[y][8]=2;
+  for(x=8;x<=14;x++)a[7][x]=2;
 
-  // main path village -> bridge -> ruins
-  for(x=3;x<=38;x++){a[15][x]=2;a[14][x]=2}
-  for(y=15;y<=23;y++){a[y][7]=2}
-  for(x=7;x<=18;x++)a[23][x]=2;
-  for(y=9;y<=15;y++)a[y][14]=2;
-  for(x=14;x<=19;x++)a[9][x]=2;
-
-  // meadow flowers
-  for(y=5;y<=11;y++)for(x=8;x<=16;x++)if((x+y+seed)%3===0)a[y][x]=4;
-
-  // forest chunks
-  for(y=3;y<=12;y++)for(x=2;x<=7;x++)if((x*5+y*3+seed)%4!==0)a[y][x]=1;
-  for(y=4;y<=12;y++)for(x=24;x<=31;x++)if((x+y*2+seed)%5!==0)a[y][x]=1;
-
-  // ruins zone
-  for(y=18;y<=25;y++)for(x=31;x<=41;x++){
-    if(y===18||x===31||x===41||y===25)a[y][x]=6;
-    else if((x+y+seed)%5===0)a[y][x]=6;
-    else a[y][x]=5;
+  // eastern zone changes too
+  if(variant%2===0){
+    for(y=18;y<=25;y++)for(x=31;x<=41;x++){
+      if(y===18||x===31||x===41||y===25)a[y][x]=6;
+      else if((x+y+seed)%5===0)a[y][x]=6;
+      else a[y][x]=5;
+    }
+  }else{
+    for(y=4;y<=12;y++)for(x=32;x<=41;x++){
+      if((x+y+seed)%4===0)a[y][x]=8;
+      else a[y][x]=9;
+    }
+    for(y=18;y<=25;y++)for(x=31;x<=41;x++)if((x+y)%6===0)a[y][x]=6;
   }
-
-  // cave mountain zone
-  for(y=3;y<=9;y++)for(x=34;x<=41;x++)a[y][x]=8;
-  a[8][36]=10;a[8][37]=10;a[9][36]=2;a[9][37]=2;
-
-  // sandy riverbank patches
-  for(y=3;y<h-2;y++){if(a[y][18]===0)a[y][18]=9;if(a[y][22]===0)a[y][22]=9}
 
   // Permanent NETVILA rule: locked gates must be impossible to bypass.
-  // A solid north-south wall divides the western and eastern zones;
-  // only the gate opening can connect them.
   for(y=2;y<=26;y++)a[y][24]=6;
   for(y=13;y<=16;y++)a[y][24]=2;
 
-  // Boss arena must always have a valid entrance after the gate.
-  // Required route tiles are cleared AFTER decorative/random ruin placement.
-  for(x=31;x<=40;x++)a[21][x]=5;
-  a[22][31]=5;
+  // Guaranteed required routes are carved AFTER decoration.
+  // Spawn -> guarded chest -> remaining enemies -> gate.
+  for(y=7;y<=21;y++)a[y][8]=2;
+  for(x=8;x<=16;x++)a[7][x]=2;
+  for(x=8;x<=23;x++)a[14][x]=2;
+  for(x=8;x<=23;x++)a[15][x]=2;
+  for(y=14;y<=20;y++)a[y][12]=2;
+  for(x=12;x<=23;x++)a[20][x]=2;
+
+  // Boss route after the gate.
+  for(x=25;x<=40;x++)a[21][x]=5;
+  a[20][31]=5;a[22][31]=5;
 
   return a;
 }
 
+function housesForLevel(id){
+  var sets=[
+    [{x:3*T,y:17*T,w:3*T,h:3*T,color:0},{x:10*T,y:18*T,w:3*T,h:3*T,color:1},{x:4*T,y:22*T,w:2*T,h:2*T,color:2}],
+    [{x:4*T,y:17*T,w:2*T,h:2*T,color:1},{x:12*T,y:17*T,w:3*T,h:3*T,color:2},{x:6*T,y:22*T,w:3*T,h:2*T,color:0}],
+    [{x:3*T,y:18*T,w:3*T,h:2*T,color:2},{x:11*T,y:19*T,w:2*T,h:2*T,color:0},{x:15*T,y:22*T,w:3*T,h:2*T,color:1}],
+    [{x:4*T,y:18*T,w:3*T,h:3*T,color:0},{x:13*T,y:17*T,w:2*T,h:2*T,color:1}],
+    [{x:3*T,y:19*T,w:2*T,h:2*T,color:1},{x:10*T,y:18*T,w:3*T,h:3*T,color:0},{x:16*T,y:22*T,w:2*T,h:2*T,color:2}],
+    [{x:4*T,y:17*T,w:3*T,h:2*T,color:2},{x:12*T,y:19*T,w:3*T,h:2*T,color:1},{x:17*T,y:17*T,w:2*T,h:2*T,color:0}]
+  ];
+  return sets[(id-1)%sets.length];
+}
+
+var houses=[];
 var houses=[
   {x:3*T,y:17*T,w:3*T,h:3*T,doorX:4*T+6,doorY:20*T-5,color:0},
   {x:10*T,y:18*T,w:3*T,h:3*T,doorX:11*T+6,doorY:21*T-5,color:1},
   {x:4*T,y:22*T,w:2*T,h:2*T,doorX:4*T+11,doorY:24*T-5,color:2}
 ];
 
+var levelNames=["UPĖS SLĖNIS","MIŠKO TAKAI","DVIEJŲ TILTŲ KRAŠTAS","AKMENŲ LAUKAS","URVŲ ZONA","GRIUVĖSIŲ PAKRAŠTYS","UŽRAKINTA","UŽRAKINTA"];
 var levels=[];
-for(var li=1;li<=8;li++)levels.push({id:li,released:li<=6,title:li===6?"NAUJA SAVAITĖ":"TESTINIS PASAULIS",map:makeWorld(li)});
+for(var li=1;li<=8;li++)levels.push({id:li,released:li<=6,title:levelNames[li-1],map:makeWorld(li)});
 
 var state="select",L=null,p=null,cam={x:0,y:0},keys={},enemy=null,attempt=null,qa=false,
     last=performance.now(),chest=null,gate=null,npcs=null,enemies=null,boss=null,anim=0,lastTap={},sprintKey=null,feedbackPending=null;
@@ -326,17 +369,18 @@ function play(id){
   var base=levels[id-1];
   L={id:id,map:cloneMap(base.map)};
   p={x:8*T,y:21*T,w:12,h:12,hp:3,key:false,dir:"up"};
+  houses=housesForLevel(id);
 
-  chest={x:13*T+2,y:7*T+2,w:12,h:10,open:false};
+  chest={x:13*T+2,y:7*T+2,w:12,h:10,open:false,guardId:"GLITCH"};
   gate={x:24*T,y:13*T,w:16,h:64,open:false};
   npcs=[
     {x:8*T,y:20*T,w:12,h:12,name:"MIRA",msg:id===6?"Šiandien atsirakino 6 lygis. Kiti lygiai niekur nedingo.":"Šį lygį gali peržaisti kada nori.",look:1},
     {x:15*T,y:10*T,w:12,h:12,name:"RIN",msg:"Už upės prasideda pavojingesnė NETVILOS dalis.",look:3}
   ];
   enemies=[
-    {x:16*T,y:7*T,w:14,h:14,hp:2,maxHp:2,alive:true,name:"GLITCH",color:C.enemy,kind:0},
-    {x:27*T,y:14*T,w:14,h:14,hp:2,maxHp:2,alive:true,name:"BUG",color:C.enemy2,kind:1},
-    {x:29*T,y:20*T,w:14,h:14,hp:2,maxHp:2,alive:true,name:"SPAM",color:"#ed8b37",kind:2}
+    {x:14*T+6,y:7*T,w:14,h:14,hp:2,maxHp:2,alive:true,name:"GLITCH",color:C.enemy,kind:0,guardsChest:true},
+    {x:18*T,y:14*T,w:14,h:14,hp:2,maxHp:2,alive:true,name:"BUG",color:C.enemy2,kind:1},
+    {x:14*T,y:20*T,w:14,h:14,hp:2,maxHp:2,alive:true,name:"SPAM",color:"#ed8b37",kind:2}
   ];
   boss={x:37*T,y:21*T,w:18,h:18,hp:3,maxHp:3,alive:true,name:"CHAOS.EXE",color:C.boss,kind:3};
 
@@ -412,12 +456,17 @@ function interact(){
   }
 
   if(!chest.open&&near(chest,22)){
+    var guard=enemies.find(function(e){return e.name===chest.guardId});
+    if(guard&&guard.alive){showText("SKRYNIA","Skrynią saugo "+guard.name+". Pirmiausia turi jį nugalėti.");return}
     chest.open=true;p.key=true;updateHud();showText("SKRYNIA","Radai raktą į rytinius vartus!");return;
   }
 
   if(!gate.open&&near(gate,42)){
-    if(p.key){gate.open=true;showText("VARTAI","Raktas tiko. Kelias į griuvėsius atidarytas.")}
-    else showText("VARTAI","Užrakinta. Kažkur vakaruose turėtų būti raktas.");
+    var alive=enemies.filter(function(e){return e.alive});
+    if(!p.key&&alive.length){showText("VARTAI","Trūksta rakto ir dar liko "+alive.length+" priešas(-ai).");return}
+    if(!p.key){showText("VARTAI","Visi priešai nugalėti, bet dar reikia rakto.");return}
+    if(alive.length){showText("VARTAI","Raktą turi, bet vartai neatsidarys, kol nenugalėsi visų priešų. Liko: "+alive.length+".");return}
+    gate.open=true;showText("VARTAI","Raktas yra, visi priešai nugalėti. Vartai atsiveria.");
     return;
   }
 }
@@ -436,15 +485,24 @@ function skill(s,ok,first){
   if(ok)attempt.skills[s].correct++;
   if(ok&&first)attempt.skills[s].firstTry++;
 }
-function randomTask(){
-  var t=taskBank[Math.floor(Math.random()*taskBank.length)];
-  return JSON.parse(JSON.stringify(t));
+function cloneTask(t,index){
+  var c=JSON.parse(JSON.stringify(t));
+  c._id=index;
+  return c;
+}
+function makeTaskQueue(n){
+  var pool=shuffle(taskBank.map(function(t,i){return cloneTask(t,i)})),q=[];
+  while(q.length<n){
+    if(!pool.length)pool=shuffle(taskBank.map(function(t,i){return cloneTask(t,i)}));
+    q.push(pool.shift());
+  }
+  return q;
 }
 function battle(e,isBoss){
   if(state!=="play")return;
-  enemy={ref:e,boss:isBoss,tries:0,item:randomTask()};
+  enemy={ref:e,boss:isBoss,tries:0,queue:makeTaskQueue(e.hp)};
+  enemy.item=enemy.queue.shift();
   state="battle";
-  attempt.answers++;
   renderTask();
 }
 function taskHeader(){
@@ -468,6 +526,8 @@ function renderTask(){
     html+='<div class="targetGrid">';
     it.targets.forEach(function(a){html+='<button class="btn targetBtn" data-target="'+encodeURIComponent(a)+'">📁 '+a+"</button>"});
     html+="</div>";
+  }else if(it.type==="route"){
+    html+=renderRouteMap(it)+'<div class="routeControls"><button class="btn routeArrow" data-route="↑">↑</button><button class="btn routeArrow" data-route="←">←</button><button class="btn routeArrow" data-route="↓">↓</button><button class="btn routeArrow" data-route="→">→</button><button class="btn" id="routeUndo">↶</button><button class="btn" id="routeClear">IŠVALYTI</button></div><div class="routeSeq" id="routeSeq">—</div><button class="btn" id="routeCheck">PATIKRINTI KELIĄ</button>';
   }
   html+='<div class="fb" id="fb"></div><p class="small">Užduoties tipas: '+it.type.toUpperCase()+"</p>";
   modal.innerHTML=html;
@@ -494,6 +554,31 @@ function renderTask(){
       b.onclick=function(){resolveTask(decodeURIComponent(b.getAttribute("data-target")))};
     });
   }
+  if(it.type==="route"){
+    enemy.routeAnswer=[];
+    modal.querySelectorAll("[data-route]").forEach(function(b){
+      b.onclick=function(){enemy.routeAnswer.push(b.getAttribute("data-route"));updateRouteSeq()};
+    });
+    document.getElementById("routeUndo").onclick=function(){enemy.routeAnswer.pop();updateRouteSeq()};
+    document.getElementById("routeClear").onclick=function(){enemy.routeAnswer=[];updateRouteSeq()};
+    document.getElementById("routeCheck").onclick=function(){resolveTask(enemy.routeAnswer.slice())};
+    updateRouteSeq();
+  }
+}
+function renderRouteMap(it){
+  var html='<div class="routeMap">';
+  for(var y=0;y<4;y++)for(var x=0;x<4;x++){
+    var cls="routeCell",txt="";
+    if(it.grid.walls.some(function(w){return w[0]===x&&w[1]===y})){cls+=" wall";txt="■"}
+    if(it.grid.start[0]===x&&it.grid.start[1]===y){cls+=" start";txt="🤖"}
+    if(it.grid.goal[0]===x&&it.grid.goal[1]===y){cls+=" goal";txt="🚩"}
+    html+='<div class="'+cls+'">'+txt+'</div>';
+  }
+  return html+"</div>";
+}
+function updateRouteSeq(){
+  var el=document.getElementById("routeSeq");
+  if(el)el.textContent=enemy.routeAnswer&&enemy.routeAnswer.length?enemy.routeAnswer.join("  "):"—";
 }
 function setupDrag(){
   var dragging=null,list=document.getElementById("dragList");
@@ -512,13 +597,14 @@ function setupDrag(){
 function isCorrect(it,v){
   if(it.type==="pick"||it.type==="target")return v===it.c;
   if(it.type==="type")return it.accepted.some(function(a){return norm(a)===norm(v)});
-  if(it.type==="sort")return JSON.stringify(v)===JSON.stringify(it.correct);
+  if(it.type==="sort"||it.type==="route")return JSON.stringify(v)===JSON.stringify(it.correct);
   return false;
 }
 function resolveTask(v){
   if(state==="feedback")return;
   var it=enemy.item,ok=isCorrect(it,v),first=enemy.tries===0;
   enemy.tries++;
+  attempt.answers++;
   skill(it.skill,ok,first);
   var fb=document.getElementById("fb");
 
@@ -529,7 +615,7 @@ function resolveTask(v){
     fb.style.background="#d8f3dc";
     fb.style.color="#184d2b";
     state="feedback";
-    feedbackPending={ok:true};
+    feedbackPending={ok:true,task:it};
     disableTaskInputs();
   }else{
     attempt.wrong++;p.hp--;updateHud();
@@ -537,7 +623,7 @@ function resolveTask(v){
     fb.style.background="#ffe0e0";
     fb.style.color="#812727";
     state="feedback";
-    feedbackPending={ok:false};
+    feedbackPending={ok:false,task:it};
     disableTaskInputs();
   }
 }
@@ -549,20 +635,28 @@ function disableTaskInputs(){
 }
 function continueFeedback(){
   if(state!=="feedback"||!feedbackPending)return;
-  var wasOk=feedbackPending.ok;
+  var result=feedbackPending;
   feedbackPending=null;
 
-  if(wasOk){
+  if(result.ok){
     if(enemy.ref.hp<=0){
       enemy.ref.alive=false;
       if(enemy.boss){attempt.boss=true;done()}
       else{modal.classList.add("hide");state="play";enemy=null;debug()}
     }else{
-      enemy.tries=0;enemy.item=randomTask();state="battle";renderTask();
+      enemy.tries=0;
+      enemy.item=enemy.queue.shift();
+      state="battle";renderTask();
     }
   }else{
+    // Wrong question goes to the END of this enemy's queue.
+    enemy.queue.push(result.task);
     if(p.hp<=0)gameover();
-    else{enemy.tries=0;enemy.item=randomTask();state="battle";renderTask()}
+    else{
+      enemy.tries=0;
+      enemy.item=enemy.queue.shift();
+      state="battle";renderTask();
+    }
   }
 }
 function payload(){
@@ -717,7 +811,7 @@ function draw(){
   ctx.fillStyle="#9ad45a";ctx.fillRect(0,0,W,H);
   if(!L){
     ctx.fillStyle=C.ink;ctx.font="bold 16px monospace";ctx.fillText("NETVILA",43,62);
-    ctx.font="7px monospace";ctx.fillText("V2 BUILD 0.3",46,75);
+    ctx.font="7px monospace";ctx.fillText("V2 BUILD 0.4",46,75);
     return;
   }
 
