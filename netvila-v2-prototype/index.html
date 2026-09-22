@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NETVILA V2 prototipas</title>
+<style>
+:root{--d:#0f380f;--m:#306230;--l:#8bac0f;--p:#9bbc0f}
+*{box-sizing:border-box}body{margin:0;background:#071207;color:var(--d);font-family:"Courier New",monospace;display:grid;place-items:center;min-height:100vh;padding:16px}
+.wrap{width:min(980px,100%);display:grid;grid-template-columns:minmax(0,720px) 240px;gap:16px}
+.gb{background:#bbb;border:10px solid #d5d5d5;border-radius:22px 22px 52px 22px;padding:14px;box-shadow:0 12px 0 #555}
+.brand{font-weight:900;letter-spacing:2px;color:#433663;margin:0 0 8px}
+.screen{position:relative;aspect-ratio:10/9;background:var(--p);border:12px solid #52525e;overflow:hidden}
+canvas{width:100%;height:100%;display:block;image-rendering:pixelated}
+.panel,.box{background:var(--p);border:4px solid var(--d);box-shadow:5px 5px 0 var(--d);padding:10px}
+.small{font-size:12px;line-height:1.4}.chars{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.levels{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+button,input{font:inherit}.btn{border:3px solid var(--d);background:var(--l);color:var(--d);font-weight:900;padding:7px;cursor:pointer}.btn.sel,.btn:hover:not(:disabled){background:var(--d);color:var(--p)}.btn:disabled{opacity:.4}
+.char{min-height:58px}.level{position:relative;min-height:52px;text-align:left}.new{position:absolute;right:2px;top:2px;background:var(--d);color:var(--p);font-size:9px;padding:2px 3px}
+#start{position:absolute;inset:0;background:#0f380fdc;display:grid;place-items:center;padding:8px}#start.hide{display:none}.box{width:min(94%,540px);max-height:94%;overflow:auto}
+#modal,#menu,#finish{position:absolute;left:7%;right:7%;bottom:5%;z-index:5}#modal.hide,#menu.hide,#finish.hide{display:none}#modal{top:8%;bottom:auto;max-height:84%;overflow:auto}
+.hud{position:absolute;top:4px;left:4px;background:#9bbc0fdc;border:2px solid var(--d);padding:2px 4px;font-size:10px;font-weight:900}.right{left:auto;right:4px}
+.answers{display:grid;gap:5px}.ans{text-align:left}.fb{min-height:22px;font-weight:900;margin-top:6px}.side{display:grid;gap:12px;align-content:start}.keys{display:grid;grid-template-columns:1fr 1fr;gap:6px}.key{border:2px solid var(--d);padding:5px;background:var(--l);font-size:12px}
+pre{white-space:pre-wrap;word-break:break-word;max-height:260px;overflow:auto;font-size:10px;display:none}pre.show{display:block}
+@media(max-width:800px){.wrap{grid-template-columns:1fr}.side{order:-1}.chars{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="gb"><div class="brand">NETVILA V2 // GAME BOY PROTOTIPAS</div><div class="screen">
+<canvas id="c" width="160" height="144"></canvas><div class="hud" id="hud">HP ♥♥♥</div><div class="hud right" id="lh">L1</div>
+<div id="start"><div class="box"><h2>NETVILA</h2><p class="small">Kiekvieną kartą pasirink veikėją. Individualus progresas nesaugomas.</p><div class="chars" id="chars"></div><h3>PASIRINK LYGI</h3><div class="levels" id="levels"></div><p class="small">Naujausias išleistas lygis pažymėtas NEW. Ankstesni lygiai lieka pasiekiami.</p></div></div>
+<div id="modal" class="box hide"></div><div id="menu" class="box hide"></div><div id="finish" class="box hide"></div>
+</div></div>
+<div class="side"><div class="panel"><b>Valdymas</b><div class="keys"><div class="key">↑↓←→<br>judėti</div><div class="key">Z<br>veiksmas</div><div class="key">X<br>atgal</div><div class="key">ENTER<br>meniu</div></div></div>
+<div class="panel small"><b>Build 0.1</b><p>4 veikėjai · 6 išleisti lygiai · kamera · collision · NPC · skrynia/raktas · vartai · priešai · boss · randomizuojami klausimai · anoniminės analitikos payload.</p><button class="btn" id="home">Į pradžią</button> <button class="btn" id="qa">QA</button><pre id="dbg"></pre></div></div>
+</div>
+<script>
+(function(){
+"use strict";
+var W=160,H=144,T=16,cv=document.getElementById("c"),x=cv.getContext("2d");x.imageSmoothingEnabled=false;
+var start=document.getElementById("start"),chars=document.getElementById("chars"),levelsEl=document.getElementById("levels"),modal=document.getElementById("modal"),menu=document.getElementById("menu"),finish=document.getElementById("finish"),hud=document.getElementById("hud"),lh=document.getElementById("lh"),dbg=document.getElementById("dbg");
+var P=["#0f380f","#306230","#8bac0f","#9bbc0f"],people=[{n:"MOSS",b:0,h:1,s:2},{n:"NOVA",b:1,h:0,s:3},{n:"BYTE",b:2,h:0,s:3},{n:"LUMA",b:3,h:1,s:2}],chosen=0;
+var qbank=[
+ {q:"Kuris skaičius didžiausias?",a:["3","7","5","1"],c:"7",skill:"logika"},
+ {q:"Kuri rodyklė veda į dešinę?",a:["←","→","↑","↓"],c:"→",skill:"kryptys"},
+ {q:"Kuris pavadinimas aiškiausias?",a:["failas","asdf","Projektas_01","x"],c:"Projektas_01",skill:"pavadinimai"},
+ {q:"Kiek yra 2 + 2?",a:["3","4","5","6"],c:"4",skill:"logika"},
+ {q:"Kas eina pirmiau?",a:["uždarau","atidarau","perskaitau","išjungiu"],c:"atidarau",skill:"seka"}
+];
+function map(seed){var a=[],y,z;for(y=0;y<18;y++){a[y]=[];for(z=0;z<24;z++){a[y][z]=(z===0||y===0||z===23||y===17)?1:0;if((z*7+y*11+seed)%37===0)a[y][z]=1}}for(z=2;z<22;z++)a[9][z]=3;for(y=3;y<15;y++)a[y][6]=3;return a}
+var levels=[];for(var i=1;i<=8;i++)levels.push({id:i,released:i<=6,title:"TESTINIS "+i,map:map(i)});
+var state="select",L=null,p=null,cam={x:0,y:0},keys={},enemy=null,attempt=null,qa=false,last=performance.now(),chest=null,gate=null,npc=null,enemies=null,boss=null;
+function shuf(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
+function charButtons(){chars.innerHTML="";people.forEach(function(o,i){var b=document.createElement("button");b.className="btn char"+(i===chosen?" sel":"");b.textContent=o.n;b.onclick=function(){chosen=i;charButtons()};chars.appendChild(b)})}
+function levelButtons(){levelsEl.innerHTML="";var latest=6;levels.forEach(function(o){var b=document.createElement("button");b.className="btn level";b.disabled=!o.released;b.innerHTML=(o.id<10?"0":"")+o.id+" LYGIS<br><span class=small>"+(o.released?o.title:"UŽRAKINTA")+"</span>"+(o.id===latest?'<span class=new>NEW</span>':"");b.onclick=function(){play(o.id)};levelsEl.appendChild(b)})}
+function clone(a){return a.map(function(r){return r.slice()})}
+function play(id){var base=levels[id-1];L={id:id,map:clone(base.map)};p={x:34,y:146,w:12,h:12,hp:3,key:false,dir:"down"};chest={x:146,y:114,open:false};gate={x:256,y:144,open:false};npc={x:82,y:130};enemies=[{x:180,y:132,hp:2,alive:true},{x:226,y:164,hp:2,alive:true}];boss={x:338,y:146,hp:3,alive:true};attempt={id:Math.random().toString(36).slice(2),classCode:new URLSearchParams(location.search).get("class")||"TEST",level:id,char:people[chosen].n,start:Date.now(),answers:0,correct:0,firstTry:0,wrong:0,boss:false,completed:false,skills:{}};state="play";start.classList.add("hide");modal.classList.add("hide");finish.classList.add("hide");menu.classList.add("hide");lh.textContent="L"+id;uh();debug()}
+function home(){state="select";L=null;attempt=null;start.classList.remove("hide");modal.classList.add("hide");finish.classList.add("hide");menu.classList.add("hide");debug()}
+function solid(px,py){var tx=Math.floor(px/T),ty=Math.floor(py/T);if(!L||tx<0||ty<0||ty>=L.map.length||tx>=L.map[0].length)return true;var t=L.map[ty][tx];if(t===1)return true;if(!gate.open&&px>gate.x-1&&px<gate.x+T&&py>gate.y-1&&py<gate.y+T)return true;return false}
+function can(nx,ny){return !solid(nx+1,ny+2)&&!solid(nx+11,ny+2)&&!solid(nx+1,ny+11)&&!solid(nx+11,ny+11)}
+function hit(a,b){return a.x<b.x+12&&a.x+12>b.x&&a.y<b.y+12&&a.y+12>b.y}
+function front(){var a={x:p.x+6,y:p.y+6};if(p.dir==="up")a.y-=14;if(p.dir==="down")a.y+=14;if(p.dir==="left")a.x-=14;if(p.dir==="right")a.x+=14;return a}
+function near(o,r){var f=front();return Math.hypot(f.x-(o.x+6),f.y-(o.y+6))<r}
+function text(t){state="dialog";modal.classList.remove("hide");modal.innerHTML="<b>"+t+"</b><p class=small>Z – tęsti · X – uždaryti</p>"}
+function interact(){if(state==="dialog"){modal.classList.add("hide");state="play";return}if(state!=="play")return;if(near(npc,20)){text(L.id===6?"Tai naujausias šios savaitės lygis.":"Tai senesnis lygis – jį visada gali peržaisti.");return}if(!chest.open&&near(chest,20)){chest.open=true;p.key=true;uh();text("RADAI RAKTĄ!");return}if(!gate.open&&near(gate,22)){if(p.key){gate.open=true;text("VARTAI ATRAKINTI.")}else text("Vartams reikia rakto.");return}}
+function uh(){hud.textContent="HP "+Array((p?p.hp:0)+1).join("♥")+(p&&p.key?"  🔑":"")}
+function skill(s,ok,first){if(!attempt.skills[s])attempt.skills[s]={tries:0,correct:0,firstTry:0};attempt.skills[s].tries++;if(ok)attempt.skills[s].correct++;if(ok&&first)attempt.skills[s].firstTry++}
+function battle(e,isBoss){if(state!=="play")return;enemy={ref:e,boss:isBoss,tries:0,item:qbank[Math.floor(Math.random()*qbank.length)]};enemy.answers=shuf(enemy.item.a);state="battle";attempt.answers++;battleUI()}
+function battleUI(){var it=enemy.item,html="<b>"+(enemy.boss?"BOSS":"PRIEŠAS")+" HP "+Array(enemy.ref.hp+1).join("♥")+"</b><h3>"+it.q+"</h3><div class=answers>";enemy.answers.forEach(function(a,i){html+='<button class="btn ans" data-i="'+i+'">'+a+"</button>"});html+="</div><div class=fb id=fb></div><p class=small>Pelė arba Z/rodyklės bus plečiamos kitu build.</p>";modal.innerHTML=html;modal.classList.remove("hide");modal.querySelectorAll("[data-i]").forEach(function(b){b.onclick=function(){answer(b.textContent)}})}
+function answer(v){var it=enemy.item,ok=v===it.c,first=enemy.tries===0;enemy.tries++;skill(it.skill,ok,first);var fb=document.getElementById("fb");if(ok){attempt.correct++;if(first)attempt.firstTry++;enemy.ref.hp--;fb.textContent="✓ TEISINGAI";fb.style.background=P[0];fb.style.color=P[3];setTimeout(function(){if(enemy.ref.hp<=0){enemy.ref.alive=false;if(enemy.boss){attempt.boss=true;done()}else{modal.classList.add("hide");state="play";enemy=null;debug()}}else{enemy.tries=0;enemy.item=qbank[Math.floor(Math.random()*qbank.length)];enemy.answers=shuf(enemy.item.a);battleUI()}},500)}else{attempt.wrong++;p.hp--;uh();fb.textContent="✗ BANDYK KITĄ KLAUSIMĄ";fb.style.background="#633";fb.style.color=P[3];setTimeout(function(){if(p.hp<=0)gameover();else{enemy.tries=0;enemy.item=qbank[Math.floor(Math.random()*qbank.length)];enemy.answers=shuf(enemy.item.a);battleUI()}},650)}}
+function payload(){if(!attempt)return null;var o=JSON.parse(JSON.stringify(attempt));o.durationSec=Math.round((Date.now()-attempt.start)/1000);delete o.start;return o}
+function done(){attempt.completed=true;attempt.boss=true;state="finish";modal.classList.add("hide");finish.classList.remove("hide");finish.innerHTML="<b>LYGIS ĮVEIKTAS!</b><p class=small>Individualus progresas nesaugomas. Anoniminis bandymo rezultatas paruoštas mokytojo analitikai.</p><button class=btn id=again>Kartoti</button> <button class=btn id=back>Lygių meniu</button>";console.log("NETVILA_ANALYTICS",payload());finish.querySelector("#again").onclick=function(){play(L.id)};finish.querySelector("#back").onclick=home;debug()}
+function gameover(){state="finish";modal.classList.add("hide");finish.classList.remove("hide");finish.innerHTML="<b>GAME OVER</b><p class=small>Profilis nesaugomas.</p><button class=btn id=again>Kartoti</button> <button class=btn id=back>Lygių meniu</button>";console.log("NETVILA_ANALYTICS",payload());finish.querySelector("#again").onclick=function(){play(L.id)};finish.querySelector("#back").onclick=home;debug()}
+function menuOpen(){if(state==="play"){state="menu";menu.classList.remove("hide");menu.innerHTML="<b>START MENIU</b><p class=small>Lygis "+L.id+" · "+people[chosen].n+" · HP "+p.hp+"</p><button class=btn id=resume>Tęsti</button> <button class=btn id=exit>Lygių meniu</button>";menu.querySelector("#resume").onclick=function(){menu.classList.add("hide");state="play"};menu.querySelector("#exit").onclick=home}else if(state==="menu"){menu.classList.add("hide");state="play"}}
+function debug(){dbg.classList.toggle("show",qa);if(qa)dbg.textContent=JSON.stringify({state:state,level:L?L.id:null,character:people[chosen].n,analytics:payload()},null,2)}
+function tile(t,px,py){if(t===0){x.fillStyle=P[3];x.fillRect(px,py,T,T);x.fillStyle=P[2];x.fillRect(px+3,py+4,2,2)}else if(t===3){x.fillStyle=P[2];x.fillRect(px,py,T,T);x.fillStyle=P[1];x.fillRect(px,py+7,T,2)}else{x.fillStyle=P[1];x.fillRect(px,py,T,T);x.fillStyle=P[0];x.fillRect(px+2,py+2,12,10);x.fillStyle=P[2];x.fillRect(px+5,py+10,6,6)}}
+function person(px,py,o){px=Math.round(px);py=Math.round(py);x.fillStyle=P[o.b];x.fillRect(px+3,py+6,7,6);x.fillStyle=P[o.s];x.fillRect(px+3,py+1,7,6);x.fillStyle=P[o.h];x.fillRect(px+2,py,9,3);x.fillStyle=P[0];x.fillRect(px+4,py+4,1,1);x.fillRect(px+8,py+4,1,1);x.fillRect(px+3,py+12,2,2);x.fillRect(px+8,py+12,2,2)}
+function foe(o,b){var px=Math.round(o.x-cam.x),py=Math.round(o.y-cam.y);x.fillStyle=b?P[0]:P[1];x.fillRect(px+2,py+2,b?12:9,b?12:9);x.fillStyle=P[3];x.fillRect(px+4,py+5,2,2);x.fillRect(px+(b?10:7),py+5,2,2)}
+function draw(){x.fillStyle=P[3];x.fillRect(0,0,W,H);if(!L){x.fillStyle=P[0];x.font="bold 16px monospace";x.fillText("NETVILA",43,62);x.font="7px monospace";x.fillText("V2 PROTOTIPAS",48,75);return}cam.x=Math.max(0,Math.min(L.map[0].length*T-W,Math.floor(p.x+6-W/2)));cam.y=Math.max(0,Math.min(L.map.length*T-H,Math.floor(p.y+6-H/2)));for(var yy=Math.floor(cam.y/T);yy<=Math.ceil((cam.y+H)/T);yy++)for(var xx=Math.floor(cam.x/T);xx<=Math.ceil((cam.x+W)/T);xx++)if(L.map[yy]&&L.map[yy][xx]!=null)tile(L.map[yy][xx],xx*T-cam.x,yy*T-cam.y);x.fillStyle=P[chest.open?1:0];x.fillRect(chest.x-cam.x,chest.y-cam.y,12,10);if(!gate.open){x.fillStyle=P[0];x.fillRect(gate.x-cam.x,gate.y-cam.y,16,16)}person(npc.x-cam.x,npc.y-cam.y,people[1]);enemies.filter(function(e){return e.alive}).forEach(function(e){foe(e,false)});if(boss.alive)foe(boss,true);person(p.x-cam.x,p.y-cam.y,people[chosen])}
+function update(dt){if(state!=="play"||!L)return;var dx=0,dy=0;if(keys.ArrowLeft){dx=-1;p.dir="left"}else if(keys.ArrowRight){dx=1;p.dir="right"}else if(keys.ArrowUp){dy=-1;p.dir="up"}else if(keys.ArrowDown){dy=1;p.dir="down"}var d=58*dt,nx=p.x+dx*d,ny=p.y+dy*d;if(dx&&can(nx,p.y))p.x=nx;if(dy&&can(p.x,ny))p.y=ny;enemies.filter(function(e){return e.alive}).forEach(function(e){if(hit(p,e))battle(e,false)});if(gate.open&&boss.alive&&hit(p,boss))battle(boss,true)}
+function loop(now){var dt=Math.min(.033,(now-last)/1000);last=now;update(dt);draw();requestAnimationFrame(loop)}
+document.addEventListener("keydown",function(e){if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight","Enter"].indexOf(e.key)>=0)e.preventDefault();keys[e.key]=true;if(e.repeat)return;if(e.key.toLowerCase()==="z")interact();if(e.key.toLowerCase()==="x"){if(state==="dialog"){modal.classList.add("hide");state="play"}else if(state==="menu"){menu.classList.add("hide");state="play"}}if(e.key==="Enter")menuOpen()});
+document.addEventListener("keyup",function(e){keys[e.key]=false});document.getElementById("home").onclick=home;document.getElementById("qa").onclick=function(){qa=!qa;debug()};
+charButtons();levelButtons();debug();requestAnimationFrame(loop);
+})();
+</script>
+</body></html>
