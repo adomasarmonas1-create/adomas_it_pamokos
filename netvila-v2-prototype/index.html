@@ -271,7 +271,9 @@ function makeWorld(seed){
   for(y=13;y<=16;y++)a[y][24]=2;
 
   // Boss arena must always have a valid entrance after the gate.
-  a[21][31]=5;a[22][31]=5;
+  // Required route tiles are cleared AFTER decorative/random ruin placement.
+  for(x=31;x<=40;x++)a[21][x]=5;
+  a[22][31]=5;
 
   return a;
 }
