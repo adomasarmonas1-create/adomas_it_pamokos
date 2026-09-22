@@ -35,6 +35,10 @@ button,input{font:inherit}
 #modal{top:5%;bottom:auto;max-height:90%;overflow:auto}
 .hud{position:absolute;top:4px;left:4px;background:#fff7d6e8;border:2px solid var(--line);padding:2px 4px;font-size:10px;font-weight:900}
 .right{left:auto;right:4px}
+.compass{position:absolute;top:4px;left:50%;transform:translateX(-50%);width:46px;height:38px;background:#fff7d6e8;border:2px solid var(--line);font-size:8px;font-weight:900;z-index:3}
+.compass span{position:absolute;line-height:1}
+#cN{top:2px;left:20px}#cS{bottom:2px;left:20px}#cW{top:15px;left:4px}#cE{top:15px;right:4px}#cDir{top:12px;left:19px;font-size:13px}
+.compass .active{color:#d95d39;text-decoration:underline}
 .answers{display:grid;gap:5px}
 .ans{text-align:left}
 .fb{min-height:22px;font-weight:900;margin-top:6px;padding:4px}
@@ -58,11 +62,11 @@ pre.show{display:block}
 <body>
 <div class="wrap">
   <div class="gb">
-    <div class="brand">NETVILA V2 // BUILD 0.2</div>
+    <div class="brand">NETVILA V2 // BUILD 0.3</div>
     <div class="screen">
       <canvas id="c" width="160" height="144"></canvas>
       <div class="hud" id="hud">HP ♥♥♥</div>
-      <div class="hud right" id="lh">L1</div>
+      <div class="hud right" id="lh">L1</div><div class="compass" id="compass"><span id="cN">N</span><span id="cW">W</span><span id="cDir">↑</span><span id="cE">E</span><span id="cS">S</span></div>
 
       <div id="start">
         <div class="box">
@@ -85,16 +89,16 @@ pre.show{display:block}
     <div class="panel">
       <b>Valdymas</b>
       <div class="keys">
-        <div class="key">↑↓←→<br>judėti</div>
-        <div class="key">Z<br>veiksmas</div>
+        <div class="key">↑↓←→<br>eiti / laikyti</div>
+        <div class="key">2× kryptis<br>sprintas</div><div class="key">Z<br>veiksmas</div>
         <div class="key">X<br>atgal</div>
         <div class="key">ENTER<br>meniu</div>
       </div>
     </div>
 
     <div class="panel small">
-      <b>Build 0.2</b>
-      <p>Daugiaspalvis retro pasaulis · miestelis · miškas · upė · tiltas · pieva · urvas · griuvėsiai · aiškūs priešai · 4 užduočių tipai.</p>
+      <b>Build 0.3</b>
+      <p>Kompasas · dvigubo paspaudimo sprintas · neapeinami vartai · pasiekiama boss arena · feedback uždaromas tik su Z · 4 užduočių tipai.</p>
       <div class="legend">
         <div>🏠 miestelis</div><div>🌲 miškas</div>
         <div>🌊 upė</div><div>🌼 pieva</div>
@@ -123,7 +127,9 @@ var start=document.getElementById("start"),
     finish=document.getElementById("finish"),
     hud=document.getElementById("hud"),
     lh=document.getElementById("lh"),
-    dbg=document.getElementById("dbg");
+    dbg=document.getElementById("dbg"),
+    compassDir=document.getElementById("cDir"),
+    compassMarks={up:document.getElementById("cN"),right:document.getElementById("cE"),down:document.getElementById("cS"),left:document.getElementById("cW")};
 
 var C={
   grass:"#8fd14f",grass2:"#6cbf3e",path:"#d7bd73",path2:"#b49a58",
@@ -258,6 +264,15 @@ function makeWorld(seed){
   // sandy riverbank patches
   for(y=3;y<h-2;y++){if(a[y][18]===0)a[y][18]=9;if(a[y][22]===0)a[y][22]=9}
 
+  // Permanent NETVILA rule: locked gates must be impossible to bypass.
+  // A solid north-south wall divides the western and eastern zones;
+  // only the gate opening can connect them.
+  for(y=2;y<=26;y++)a[y][24]=6;
+  for(y=13;y<=16;y++)a[y][24]=2;
+
+  // Boss arena must always have a valid entrance after the gate.
+  a[21][31]=5;a[22][31]=5;
+
   return a;
 }
 
@@ -271,7 +286,7 @@ var levels=[];
 for(var li=1;li<=8;li++)levels.push({id:li,released:li<=6,title:li===6?"NAUJA SAVAITĖ":"TESTINIS PASAULIS",map:makeWorld(li)});
 
 var state="select",L=null,p=null,cam={x:0,y:0},keys={},enemy=null,attempt=null,qa=false,
-    last=performance.now(),chest=null,gate=null,npcs=null,enemies=null,boss=null,anim=0;
+    last=performance.now(),chest=null,gate=null,npcs=null,enemies=null,boss=null,anim=0,lastTap={},sprintKey=null,feedbackPending=null;
 
 function shuffle(a){
   a=a.slice();
@@ -311,7 +326,7 @@ function play(id){
   p={x:8*T,y:21*T,w:12,h:12,hp:3,key:false,dir:"up"};
 
   chest={x:13*T+2,y:7*T+2,w:12,h:10,open:false};
-  gate={x:24*T,y:14*T,w:16,h:32,open:false};
+  gate={x:24*T,y:13*T,w:16,h:64,open:false};
   npcs=[
     {x:8*T,y:20*T,w:12,h:12,name:"MIRA",msg:id===6?"Šiandien atsirakino 6 lygis. Kiti lygiai niekur nedingo.":"Šį lygį gali peržaisti kada nori.",look:1},
     {x:15*T,y:10*T,w:12,h:12,name:"RIN",msg:"Už upės prasideda pavojingesnė NETVILOS dalis.",look:3}
@@ -337,6 +352,7 @@ function play(id){
   menu.classList.add("hide");
   lh.textContent="L"+id;
   updateHud();
+  updateCompass();
   debug();
 }
 
@@ -385,6 +401,7 @@ function showText(title,t){
   modal.innerHTML="<b>"+title+"</b><p>"+t+"</p><p class=small>Z – tęsti · X – uždaryti</p>";
 }
 function interact(){
+  if(state==="feedback"){continueFeedback();return}
   if(state==="dialog"){modal.classList.add("hide");state="play";return}
   if(state!=="play")return;
 
@@ -396,7 +413,7 @@ function interact(){
     chest.open=true;p.key=true;updateHud();showText("SKRYNIA","Radai raktą į rytinius vartus!");return;
   }
 
-  if(!gate.open&&near(gate,26)){
+  if(!gate.open&&near(gate,42)){
     if(p.key){gate.open=true;showText("VARTAI","Raktas tiko. Kelias į griuvėsius atidarytas.")}
     else showText("VARTAI","Užrakinta. Kažkur vakaruose turėtų būti raktas.");
     return;
@@ -404,6 +421,12 @@ function interact(){
 }
 function updateHud(){
   hud.textContent="HP "+Array((p?p.hp:0)+1).join("♥")+(p&&p.key?"  🔑":"");
+}
+function updateCompass(){
+  if(!p)return;
+  var arrows={up:"↑",right:"→",down:"↓",left:"←"};
+  compassDir.textContent=arrows[p.dir]||"↑";
+  Object.keys(compassMarks).forEach(function(k){compassMarks[k].classList.toggle("active",k===p.dir)});
 }
 function skill(s,ok,first){
   if(!attempt.skills[s])attempt.skills[s]={tries:0,correct:0,firstTry:0};
@@ -491,6 +514,7 @@ function isCorrect(it,v){
   return false;
 }
 function resolveTask(v){
+  if(state==="feedback")return;
   var it=enemy.item,ok=isCorrect(it,v),first=enemy.tries===0;
   enemy.tries++;
   skill(it.skill,ok,first);
@@ -499,28 +523,44 @@ function resolveTask(v){
   if(ok){
     attempt.correct++;if(first)attempt.firstTry++;
     enemy.ref.hp--;
-    fb.textContent="✓ TEISINGAI — "+it.why;
+    fb.innerHTML="✓ TEISINGAI — "+it.why+"<br><span class=small>Paspausk Z, kai perskaitei.</span>";
     fb.style.background="#d8f3dc";
     fb.style.color="#184d2b";
-
-    setTimeout(function(){
-      if(enemy.ref.hp<=0){
-        enemy.ref.alive=false;
-        if(enemy.boss){attempt.boss=true;done()}
-        else{modal.classList.add("hide");state="play";enemy=null;debug()}
-      }else{
-        enemy.tries=0;enemy.item=randomTask();renderTask();
-      }
-    },850);
+    state="feedback";
+    feedbackPending={ok:true};
+    disableTaskInputs();
   }else{
     attempt.wrong++;p.hp--;updateHud();
-    fb.textContent="✗ "+it.why+" Gauni kitą tos pačios kovos užduotį.";
+    fb.innerHTML="✗ "+it.why+"<br><span class=small>Paspausk Z, kai perskaitei.</span>";
     fb.style.background="#ffe0e0";
     fb.style.color="#812727";
-    setTimeout(function(){
-      if(p.hp<=0)gameover();
-      else{enemy.tries=0;enemy.item=randomTask();renderTask()}
-    },1050);
+    state="feedback";
+    feedbackPending={ok:false};
+    disableTaskInputs();
+  }
+}
+function disableTaskInputs(){
+  modal.querySelectorAll("button,input,[draggable=true]").forEach(function(el){
+    if(el.tagName==="BUTTON"||el.tagName==="INPUT")el.disabled=true;
+    el.setAttribute("draggable","false");
+  });
+}
+function continueFeedback(){
+  if(state!=="feedback"||!feedbackPending)return;
+  var wasOk=feedbackPending.ok;
+  feedbackPending=null;
+
+  if(wasOk){
+    if(enemy.ref.hp<=0){
+      enemy.ref.alive=false;
+      if(enemy.boss){attempt.boss=true;done()}
+      else{modal.classList.add("hide");state="play";enemy=null;debug()}
+    }else{
+      enemy.tries=0;enemy.item=randomTask();state="battle";renderTask();
+    }
+  }else{
+    if(p.hp<=0)gameover();
+    else{enemy.tries=0;enemy.item=randomTask();state="battle";renderTask()}
   }
 }
 function payload(){
@@ -661,9 +701,9 @@ function drawChest(){
 function drawGate(){
   if(gate.open)return;
   var px=Math.round(gate.x-cam.x),py=Math.round(gate.y-cam.y);
-  ctx.fillStyle=C.wood;ctx.fillRect(px,py,4,32);ctx.fillRect(px+12,py,4,32);
-  ctx.fillStyle="#d8bf7d";ctx.fillRect(px+3,py+4,10,4);ctx.fillRect(px+3,py+18,10,4);
-  ctx.fillStyle=C.key;ctx.fillRect(px+7,py+12,3,5);
+  ctx.fillStyle=C.wood;ctx.fillRect(px,py,4,64);ctx.fillRect(px+12,py,4,64);
+  ctx.fillStyle="#d8bf7d";ctx.fillRect(px+3,py+7,10,4);ctx.fillRect(px+3,py+28,10,4);ctx.fillRect(px+3,py+49,10,4);
+  ctx.fillStyle=C.key;ctx.fillRect(px+7,py+20,3,6);
 }
 function drawRuinTorch(wx,wy){
   var px=Math.round(wx-cam.x),py=Math.round(wy-cam.y);
@@ -675,7 +715,7 @@ function draw(){
   ctx.fillStyle="#9ad45a";ctx.fillRect(0,0,W,H);
   if(!L){
     ctx.fillStyle=C.ink;ctx.font="bold 16px monospace";ctx.fillText("NETVILA",43,62);
-    ctx.font="7px monospace";ctx.fillText("V2 BUILD 0.2",46,75);
+    ctx.font="7px monospace";ctx.fillText("V2 BUILD 0.3",46,75);
     return;
   }
 
@@ -708,9 +748,11 @@ function update(dt){
   else if(keys.ArrowUp){dy=-1;p.dir="up"}
   else if(keys.ArrowDown){dy=1;p.dir="down"}
 
-  var d=60*dt,nx=p.x+dx*d,ny=p.y+dy*d;
+  var speed=(sprintKey&&keys[sprintKey])?104:60;
+  var d=speed*dt,nx=p.x+dx*d,ny=p.y+dy*d;
   if(dx&&can(nx,p.y))p.x=nx;
   if(dy&&can(p.x,ny))p.y=ny;
+  updateCompass();
 
   enemies.filter(function(e){return e.alive}).forEach(function(e){if(hit(p,e))battle(e,false)});
   if(gate.open&&boss.alive&&hit(p,boss))battle(boss,true);
@@ -722,8 +764,16 @@ function loop(now){
 
 document.addEventListener("keydown",function(e){
   if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight","Enter"].indexOf(e.key)>=0)e.preventDefault();
+
+  if(!e.repeat&&["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(e.key)>=0){
+    var now=performance.now();
+    if(lastTap[e.key]&&now-lastTap[e.key]<280)sprintKey=e.key;
+    lastTap[e.key]=now;
+  }
+
   keys[e.key]=true;
   if(e.repeat)return;
+
   if(e.key.toLowerCase()==="z")interact();
   if(e.key.toLowerCase()==="x"){
     if(state==="dialog"){modal.classList.add("hide");state="play"}
@@ -731,7 +781,10 @@ document.addEventListener("keydown",function(e){
   }
   if(e.key==="Enter")menuOpen();
 });
-document.addEventListener("keyup",function(e){keys[e.key]=false});
+document.addEventListener("keyup",function(e){
+  keys[e.key]=false;
+  if(sprintKey===e.key)sprintKey=null;
+});
 document.getElementById("home").onclick=home;
 document.getElementById("qa").onclick=function(){qa=!qa;debug()};
 
