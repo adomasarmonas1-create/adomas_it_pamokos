@@ -59,6 +59,9 @@ pre.show{display:block}
 .routeCell{width:32px;height:32px;border:2px solid #17212a;background:#e9f4cf;display:grid;place-items:center;font-size:18px;font-weight:900}
 .routeCell.wall{background:#6f747c;color:#fff}
 .routeCell.start{background:#cfe8ff}.routeCell.goal{background:#ffe08a}
+.routeCell.trail{box-shadow:inset 0 0 0 3px #67b7dc}
+.routeCell.robotNow{background:#bde5ff}
+.routeCell.invalid{background:#ffd0d0;box-shadow:inset 0 0 0 3px #c93434}
 .routeControls{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;margin:8px 0}
 .routeSeq{min-height:28px;border:2px dashed #17212a;padding:5px;text-align:center;background:#fff}
 .enemyHint{color:var(--bad);font-weight:900}
@@ -68,7 +71,7 @@ pre.show{display:block}
 <body>
 <div class="wrap">
   <div class="gb">
-    <div class="brand">NETVILA V2 // BUILD 0.4</div>
+    <div class="brand">NETVILA V2 // BUILD 0.5</div>
     <div class="screen">
       <canvas id="c" width="160" height="144"></canvas>
       <div class="hud" id="hud">HP ♥♥♥</div>
@@ -103,8 +106,8 @@ pre.show{display:block}
     </div>
 
     <div class="panel small">
-      <b>Build 0.4</b>
-      <p>Kompasas po gyvybėmis · skirtingi lygių žemėlapiai · skrynią saugo priešas · vartams reikia rakto IR visų priešų · klaidingas klausimas grįžta į eilės galą · roboto mini žemėlapis.</p>
+      <b>Build 0.5</b>
+      <p>Roboto užduotis priima bet kurį teisėtą kelią ir gyvai rodo roboto trajektoriją · skirtingi lygių žemėlapiai · skrynią saugo priešas · vartams reikia rakto IR visų priešų · klaidingas klausimas grįžta į eilės galą.</p>
       <div class="legend">
         <div>🏠 miestelis</div><div>🌲 miškas</div>
         <div>🌊 upė</div><div>🌼 pieva</div>
@@ -213,8 +216,7 @@ var taskBank=[
       goal:[3,0],
       walls:[[1,2],[2,2]]
     },
-    correct:["↑","↑","→","→","→","↑"],
-    why:"Komandų seka turi tiksliai atkartoti kelią žemėlapyje."
+    why:"Teisingas gali būti bet kuris kelias, kuris neatsitrenkia į kliūtį, neišeina už žemėlapio ir nuveda robotą iki vėliavos."
   },
   {
     type:"target",
@@ -527,7 +529,7 @@ function renderTask(){
     it.targets.forEach(function(a){html+='<button class="btn targetBtn" data-target="'+encodeURIComponent(a)+'">📁 '+a+"</button>"});
     html+="</div>";
   }else if(it.type==="route"){
-    html+=renderRouteMap(it)+'<div class="routeControls"><button class="btn routeArrow" data-route="↑">↑</button><button class="btn routeArrow" data-route="←">←</button><button class="btn routeArrow" data-route="↓">↓</button><button class="btn routeArrow" data-route="→">→</button><button class="btn" id="routeUndo">↶</button><button class="btn" id="routeClear">IŠVALYTI</button></div><div class="routeSeq" id="routeSeq">—</div><button class="btn" id="routeCheck">PATIKRINTI KELIĄ</button>';
+    html+='<div id="routeMapHost">'+renderRouteMap(it,[])+'</div><div class="routeControls"><button class="btn routeArrow" data-route="↑">↑</button><button class="btn routeArrow" data-route="←">←</button><button class="btn routeArrow" data-route="↓">↓</button><button class="btn routeArrow" data-route="→">→</button><button class="btn" id="routeUndo">↶</button><button class="btn" id="routeClear">IŠVALYTI</button></div><div class="routeSeq" id="routeSeq">—</div><button class="btn" id="routeCheck">PATIKRINTI KELIĄ</button>';
   }
   html+='<div class="fb" id="fb"></div><p class="small">Užduoties tipas: '+it.type.toUpperCase()+"</p>";
   modal.innerHTML=html;
@@ -557,21 +559,40 @@ function renderTask(){
   if(it.type==="route"){
     enemy.routeAnswer=[];
     modal.querySelectorAll("[data-route]").forEach(function(b){
-      b.onclick=function(){enemy.routeAnswer.push(b.getAttribute("data-route"));updateRouteSeq()};
+      b.onclick=function(){enemy.routeAnswer.push(b.getAttribute("data-route"));updateRoutePreview()};
     });
-    document.getElementById("routeUndo").onclick=function(){enemy.routeAnswer.pop();updateRouteSeq()};
-    document.getElementById("routeClear").onclick=function(){enemy.routeAnswer=[];updateRouteSeq()};
+    document.getElementById("routeUndo").onclick=function(){enemy.routeAnswer.pop();updateRoutePreview()};
+    document.getElementById("routeClear").onclick=function(){enemy.routeAnswer=[];updateRoutePreview()};
     document.getElementById("routeCheck").onclick=function(){resolveTask(enemy.routeAnswer.slice())};
-    updateRouteSeq();
+    updateRoutePreview();
   }
 }
-function renderRouteMap(it){
+function simulateRoute(it,commands){
+  var x=it.grid.start[0],y=it.grid.start[1],trail=[[x,y]],invalid=null;
+  var walls=it.grid.walls||[];
+  function isWall(px,py){return walls.some(function(w){return w[0]===px&&w[1]===py})}
+  for(var i=0;i<commands.length;i++){
+    var nx=x,ny=y,c=commands[i];
+    if(c==="↑")ny--; else if(c==="↓")ny++; else if(c==="←")nx--; else if(c==="→")nx++;
+    if(nx<0||ny<0||nx>=4||ny>=4||isWall(nx,ny)){invalid=[nx,ny];return {x:x,y:y,trail:trail,invalid:invalid,valid:false,reached:false}}
+    x=nx;y=ny;trail.push([x,y]);
+  }
+  return {x:x,y:y,trail:trail,invalid:null,valid:true,reached:x===it.grid.goal[0]&&y===it.grid.goal[1]};
+}
+function routeHasPoint(list,x,y){
+  return list.some(function(p){return p[0]===x&&p[1]===y});
+}
+function renderRouteMap(it,commands){
+  var sim=simulateRoute(it,commands||[]);
   var html='<div class="routeMap">';
   for(var y=0;y<4;y++)for(var x=0;x<4;x++){
     var cls="routeCell",txt="";
     if(it.grid.walls.some(function(w){return w[0]===x&&w[1]===y})){cls+=" wall";txt="■"}
-    if(it.grid.start[0]===x&&it.grid.start[1]===y){cls+=" start";txt="🤖"}
+    if(routeHasPoint(sim.trail,x,y))cls+=" trail";
+    if(it.grid.start[0]===x&&it.grid.start[1]===y){cls+=" start";txt=txt||"S"}
     if(it.grid.goal[0]===x&&it.grid.goal[1]===y){cls+=" goal";txt="🚩"}
+    if(sim.valid&&sim.x===x&&sim.y===y){cls+=" robotNow";txt="🤖"}
+    if(sim.invalid&&sim.invalid[0]===x&&sim.invalid[1]===y){cls+=" invalid";txt="✕"}
     html+='<div class="'+cls+'">'+txt+'</div>';
   }
   return html+"</div>";
@@ -580,6 +601,12 @@ function updateRouteSeq(){
   var el=document.getElementById("routeSeq");
   if(el)el.textContent=enemy.routeAnswer&&enemy.routeAnswer.length?enemy.routeAnswer.join("  "):"—";
 }
+function updateRoutePreview(){
+  updateRouteSeq();
+  var host=document.getElementById("routeMapHost");
+  if(host)host.innerHTML=renderRouteMap(enemy.item,enemy.routeAnswer||[]);
+}
+
 function setupDrag(){
   var dragging=null,list=document.getElementById("dragList");
   [].slice.call(list.children).forEach(function(el){
@@ -597,7 +624,11 @@ function setupDrag(){
 function isCorrect(it,v){
   if(it.type==="pick"||it.type==="target")return v===it.c;
   if(it.type==="type")return it.accepted.some(function(a){return norm(a)===norm(v)});
-  if(it.type==="sort"||it.type==="route")return JSON.stringify(v)===JSON.stringify(it.correct);
+  if(it.type==="sort")return JSON.stringify(v)===JSON.stringify(it.correct);
+  if(it.type==="route"){
+    var sim=simulateRoute(it,v);
+    return sim.valid&&sim.reached;
+  }
   return false;
 }
 function resolveTask(v){
@@ -619,7 +650,12 @@ function resolveTask(v){
     disableTaskInputs();
   }else{
     attempt.wrong++;p.hp--;updateHud();
-    fb.innerHTML="✗ "+it.why+"<br><span class=small>Paspausk Z, kai perskaitei.</span>";
+    var extra="";
+    if(it.type==="route"){
+      var sim=simulateRoute(it,v);
+      extra=sim.valid?" Robotas sustojo ne prie vėliavos.":" Robotas atsitrenkė į kliūtį arba išėjo už žemėlapio.";
+    }
+    fb.innerHTML="✗ "+it.why+extra+"<br><span class=small>Paspausk Z, kai perskaitei.</span>";
     fb.style.background="#ffe0e0";
     fb.style.color="#812727";
     state="feedback";
@@ -811,7 +847,7 @@ function draw(){
   ctx.fillStyle="#9ad45a";ctx.fillRect(0,0,W,H);
   if(!L){
     ctx.fillStyle=C.ink;ctx.font="bold 16px monospace";ctx.fillText("NETVILA",43,62);
-    ctx.font="7px monospace";ctx.fillText("V2 BUILD 0.4",46,75);
+    ctx.font="7px monospace";ctx.fillText("V2 BUILD 0.5",46,75);
     return;
   }
 
