@@ -258,10 +258,26 @@
 
   function finishRoom(){
     if(state.roomIndex===CASE.rooms.length-1){showVictory();return}
-    const r=room();$("cutTitle").textContent=r.label+" // IŠVALYTAS";$("cutText").textContent=r.cut;
-    show("screenCutscene");sfx("door");
+    const current=room();
+    const next=CASE.rooms[state.roomIndex+1];
+    const overlay=$("doorTransition");
+    $("doorTitle").textContent=current.label+" // IŠVALYTAS";
+    $("doorSub").textContent="Durys į "+next.name+" atrakinamos...";
+    overlay.classList.remove("hidden","open","walk");
+    $("viewportShell").classList.add("room-cleared");
+    sfx("good");
+    setTimeout(()=>{overlay.classList.add("open");sfx("door")},450);
+    setTimeout(()=>{overlay.classList.add("walk");$("viewportShell").classList.add("walking")},1200);
+    setTimeout(()=>{
+      state.roomIndex++;
+      loadRoom();
+      overlay.classList.add("hidden");
+      overlay.classList.remove("open","walk");
+      $("viewportShell").classList.remove("room-cleared","walking");
+      sfx("door");
+    },2600);
   }
-  $("cutContinue").onclick=()=>{state.roomIndex++;loadRoom();show("screenGame");sfx("door")};
+  $("cutContinue").onclick=()=>{};
 
   $("retryRoom").onclick=()=>{
     state.hp=3;state.challengeIndex=0;state.enemyHp=room().challenges.length;state.failedCurrent=false;
@@ -314,31 +330,62 @@
     // theme props
     if(theme==="gateway"){
       for(let i=0;i<4;i++){rect(20+i*17,57,12,7,"#213437");rect(22+i*17,59,8,3,i===2?p[4]:"#5d816f")}
-      text("MAIL RELAY",18,52,"#81988a",6);
+      text("PAŠTO MAZGAS",18,52,"#81988a",6);
     }
     if(theme==="vault"){
       for(let x of [20,48,252,280]){rect(x,48,18,74,"#10191e");for(let y=53;y<116;y+=10){rect(x+3,y,12,5,(Math.floor(ts/400)+y+x)%3===0?"#4e9e91":"#273f4b")}}
-      text("SESSION LOG",123,72,"#6b9eb0",6);text("11:42 NEW",126,83,"#c46c63",6);
+      text("SESIJŲ ŽURNALAS",119,72,"#6b9eb0",6);text("11:42 NAUJA",126,83,"#c46c63",6);
     }
     if(theme==="archive"){
       for(let x of [16,42,68,236,262,288]){rect(x,49,18,78,"#28271e");for(let y=54;y<120;y+=11){rect(x+2,y,14,7,["#665839","#3f4d45","#714642"][(x+y)%3])}}
-      text("VERSION",133,74,"#d0b26d",6);text("HISTORY",132,84,"#d0b26d",6);
+      text("VERSIJŲ",133,74,"#d0b26d",6);text("ISTORIJA",132,84,"#d0b26d",6);
     }
     if(theme==="core"){
       // circular core
       ctx.fillStyle="#32131a";ctx.beginPath();ctx.arc(160,91,34,0,Math.PI*2);ctx.fill();
       ctx.strokeStyle=p[4];ctx.lineWidth=4;ctx.beginPath();ctx.arc(160,91,26+(Math.sin(ts/180)*2),0,Math.PI*2);ctx.stroke();
-      rect(153,65,14,53,p[4]);rect(139,84,42,14,"#8f3438");text("ROOT",149,94,"#f2c19c",7);
+      rect(153,65,14,53,p[4]);rect(139,84,42,14,"#8f3438");text("ŠAKNIS",146,94,"#f2c19c",7);
     }
-    // enemy / corruption entity in first-person distance
+    // aiškus, didelis kiekvieno kambario priešas
     const remaining=state.enemyHp/Math.max(1,r.challenges.length);
     const pulse=(Math.sin(ts/170)+1)/2;
-    ctx.globalAlpha=.75+.2*pulse;
-    if(theme!=="core"){
-      const ex=160,ey=94;
-      rect(ex-15,ey-24,30,34,"#111315");rect(ex-20,ey-17,40,7,p[4]);
-      rect(ex-11,ey-31,22,11,p[3]);rect(ex-8,ey-28,5,4,"#e8c886");rect(ex+3,ey-28,5,4,"#e8c886");
-      if(remaining<.6){rect(ex-18,ey-6,9,3,p[4]);rect(ex+10,ey-14,7,3,p[4])}
+    ctx.globalAlpha=.9;
+    if(theme==="gateway"){
+      // LAIŠKŲ ŠMĖKLA — humanoidinis siluetas su "voko" galva
+      rect(132,53,56,68,"#141718");
+      rect(126,61,68,14,p[4]);
+      rect(136,42,48,27,"#704347");
+      line(136,43,160,61,"#d0b777",2); line(184,43,160,61,"#d0b777",2);
+      rect(145,69,12,6,"#e5ce8c");rect(165,69,12,6,"#e5ce8c");
+      rect(137,83,46,33,"#252b2b");rect(124,86,14,32,"#303637");rect(183,86,14,32,"#303637");
+      if(remaining<.7){rect(128,57,9,4,"#b94a4d");rect(182,95,12,4,"#b94a4d")}
+    } else if(theme==="vault"){
+      // SESIJŲ ŠMĖKLA — aukšta skaitmeninė figūra
+      rect(142,39,36,79,"#101419");
+      rect(135,52,50,18,"#28465b");
+      rect(145,45,30,22,"#1b2933");
+      rect(149,52,8,6,"#8ed3c8");rect(164,52,8,6,"#8ed3c8");
+      for(let y=72;y<113;y+=9){rect(139,y,44,4,(y/9)%2?p[3]:"#223642")}
+      rect(128,78,10,38,"#17242d");rect(184,78,10,38,"#17242d");
+      if(remaining<.5){rect(137,63,17,3,p[4]);rect(171,91,19,3,p[4])}
+    } else if(theme==="archive"){
+      // VEIDRODINIS FAILAS — gyvas bylos aplankas / mimikas
+      rect(128,54,65,59,"#554b31");
+      rect(136,46,31,12,"#74633d");
+      rect(133,60,55,44,"#2b2a22");
+      rect(141,68,14,10,"#d0b56e");rect(167,68,14,10,"#d0b56e");
+      rect(143,88,36,5,"#9c4944");
+      line(145,101,176,101,"#c5aa63",2);
+      rect(119,75,10,36,"#49412d");rect(193,75,10,36,"#49412d");
+      if(remaining<.6){rect(126,58,12,4,p[4]);rect(183,96,13,4,p[4])}
+    } else {
+      // ŠAKNINIS TRIKDIS — bosas, didesnis ir labiau dominuojantis
+      ctx.fillStyle="#3b141b";ctx.beginPath();ctx.arc(160,86,42,0,Math.PI*2);ctx.fill();
+      ctx.strokeStyle=p[4];ctx.lineWidth=5;ctx.beginPath();ctx.arc(160,86,32+(Math.sin(ts/180)*3),0,Math.PI*2);ctx.stroke();
+      rect(149,48,22,74,p[4]);rect(124,75,72,20,"#8f3438");
+      rect(141,72,12,9,"#f1d08d");rect(168,72,12,9,"#f1d08d");
+      rect(139,99,42,8,"#16090b");
+      text("TRIKDIS",142,104,"#f0c09b",6);
     }
     ctx.globalAlpha=1;
     // foreground console
