@@ -16,13 +16,13 @@
     <section class="screen active" id="screenBoot">
       <div class="boot-box">
         <div class="boot-logo">KIBER<span>AGENTAI</span></div>
-        <div class="boot-sub">CYBER INVESTIGATION UNIT // 199X ARCHIVE BUILD</div>
+        <div class="boot-sub">KIBER TYRIMŲ SKYRIUS // 199X ARCHYVO VERSIJA</div>
         <pre id="bootText">KERNEL 6.04 ............ OK
 EVIDENCE INDEX ......... MOUNTED
 LOCAL SESSION .......... PRIVATE
 AGENT DATABASE ......... 6 RECORDS
 
-WARNING: CASE 6-W04 HAS UNRESOLVED ACTIVITY.
+WARNING: BYLA 6-S04 HAS UNRESOLVED ACTIVITY.
 AUTHORIZATION REQUIRED.</pre>
         <button class="pixel-btn" id="bootContinue">[ PRADĖTI TYRIMĄ ]</button>
         <div class="boot-click-hint">PELĖ / TOUCH · KLAVIATŪRA NEREIKALINGA</div>
@@ -31,8 +31,8 @@ AUTHORIZATION REQUIRED.</pre>
 
     <section class="screen" id="screenAgents">
       <header class="retro-head">
-        <div><b>KIBERAGENTAI</b><span> // PERSONALO TERMINALAS</span></div>
-        <div class="blink">● ONLINE</div>
+        <div><b>KIBERAGENTAI</b><span> // AGENTŲ TERMINALAS</span></div>
+        <div class="blink">● PRISIJUNGTA</div>
       </header>
       <div class="agent-intro">
         <div class="kicker">NAUJAS TYRIMAS</div>
@@ -54,8 +54,8 @@ AUTHORIZATION REQUIRED.</pre>
           <small>6 KLASĖ // SEKTORIUS 04</small>
         </aside>
         <article class="brief-file">
-          <div class="stamp">CLASSIFIED</div>
-          <div class="kicker">CASE 6-W04 // SHADOW LOGIN</div>
+          <div class="stamp">SLAPTA</div>
+          <div class="kicker">BYLA 6-S04 // ŠEŠĖLINIS PRISIJUNGIMAS</div>
           <h1>PASKYROS INCIDENTAS</h1>
           <div class="typewriter" id="briefCopy"></div>
           <div class="brief-evidence">
@@ -70,7 +70,7 @@ AUTHORIZATION REQUIRED.</pre>
       <header class="game-hud">
         <div class="hud-agent">
           <canvas id="hudPortrait" width="40" height="48"></canvas>
-          <div><b id="hudAgentName">AGENT</b><small id="hudCase">CASE 6-W04</small></div>
+          <div><b id="hudAgentName">AGENT</b><small id="hudCase">BYLA 6-S04</small></div>
         </div>
         <div class="hud-center">
           <span id="roomLabel">SEKTORIUS 01</span>
@@ -78,7 +78,7 @@ AUTHORIZATION REQUIRED.</pre>
         </div>
         <div class="hud-stats">
           <div>HP <span id="hpHud">♥♥♥</span></div>
-          <div>TRACE <span id="traceHud">000</span></div>
+          <div>PĖDSAKAI <span id="traceHud">000</span></div>
         </div>
       </header>
 
@@ -88,8 +88,8 @@ AUTHORIZATION REQUIRED.</pre>
         <div class="damage-flash" id="damageFlash"></div>
         <div class="hit-flash" id="hitFlash"></div>
         <div class="enemy-card">
-          <span id="enemyTag">HOSTILE SIGNAL</span>
-          <b id="enemyName">PHANTOM MAILER</b>
+          <span id="enemyTag">GRĖSMĖ</span>
+          <b id="enemyName">LAIŠKŲ ŠMĖKLA</b>
           <div class="enemy-hp"><i id="enemyHpBar"></i></div>
         </div>
         <div class="objective" id="objectiveText">Ištirk incidentą.</div>
@@ -97,12 +97,18 @@ AUTHORIZATION REQUIRED.</pre>
 
       <section class="dialogue">
         <div class="dialogue-top">
-          <span id="questionCode">Q01</span>
+          <span id="questionCode">K01</span>
           <span id="questionType">ANALIZĖ</span>
         </div>
+
+        <div class="question-focus">
+          <span class="question-label">TYRIMO KLAUSIMAS</span>
+          <p id="promptText"></p>
+        </div>
+
         <div class="dialogue-body">
           <div class="prompt-col">
-            <p id="promptText"></p>
+            <div class="evidence-title">TURIMI ĮRODYMAI</div>
             <div class="evidence-strip" id="evidenceStrip"></div>
           </div>
           <div class="answer-col">
@@ -128,7 +134,7 @@ AUTHORIZATION REQUIRED.</pre>
 
     <section class="screen" id="screenGameOver">
       <div class="end-box fail">
-        <div class="huge">SIGNAL LOST</div>
+        <div class="huge">RYŠYS NUTRŪKO</div>
         <h1>AGENTAS ATJUNGTAS</h1>
         <p>Šiame sektoriuje padarei per daug nepagrįstų sprendimų. Byla liko atvira.</p>
         <button class="pixel-btn danger" id="retryRoom">[ KARTOTI SEKTORIŲ ]</button>
@@ -139,11 +145,11 @@ AUTHORIZATION REQUIRED.</pre>
       <div class="victory-wrap">
         <div class="victory-top">
           <canvas id="victoryPortrait" width="64" height="80"></canvas>
-          <div><div class="kicker">CASE 6-W04 // CLOSED</div><h1>BYLA UŽDARYTA</h1><p id="victoryAgent"></p></div>
+          <div><div class="kicker">BYLA 6-S04 // CLOSED</div><h1>BYLA UŽDARYTA</h1><p id="victoryAgent"></p></div>
         </div>
         <div class="report-grid">
           <div class="report-card"><small>TYRIMO TIKSLUMAS</small><strong id="accuracyStat">100%</strong></div>
-          <div class="report-card"><small>TRACE TAŠKAI</small><strong id="scoreStat">0000</strong></div>
+          <div class="report-card"><small>PĖDSAKAI TAŠKAI</small><strong id="scoreStat">0000</strong></div>
           <div class="report-card"><small>KLAIDINGOS IŠVADOS</small><strong id="mistakeStat">0</strong></div>
           <div class="report-card"><small>REITINGAS</small><strong id="rankStat">S</strong></div>
         </div>
