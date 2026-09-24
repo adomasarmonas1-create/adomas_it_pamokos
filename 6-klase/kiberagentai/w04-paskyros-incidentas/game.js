@@ -144,7 +144,7 @@
     const max=room().challenges.length;
     $("enemyHpBar").style.width=Math.max(0,state.enemyHp/max*100)+"%";
     $("progressText").textContent=(state.challengeIndex+1)+" / "+max;
-    $("questionCode").textContent="Q"+String(state.challengeIndex+1).padStart(2,"0");
+    $("questionCode").textContent="K"+String(state.challengeIndex+1).padStart(2,"0");
   }
 
   function evidenceHtml(list){
@@ -230,7 +230,7 @@
       if(!state.failedCurrent)state.firstTry++;
       state.score += state.failedCurrent?75:125;state.enemyHp--;
       $("feedbackBox").className="feedback";
-      $("feedbackBox").innerHTML="<b>TRACE CONFIRMED.</b> "+q.good;
+      $("feedbackBox").innerHTML="<b>PĖDSAKAS PATVIRTINTAS.</b> "+q.good;
       $("hitFlash").classList.remove("fire");void $("hitFlash").offsetWidth;$("hitFlash").classList.add("fire");
       if(btn&&btn.classList)btn.classList.add("chosen");
       $("nextQuestion").classList.remove("hidden");
@@ -239,7 +239,7 @@
     }else{
       sfx("bad");state.failedCurrent=true;state.mistakes++;state.hp--;
       $("feedbackBox").className="feedback bad";
-      $("feedbackBox").innerHTML="<b>TRACE ERROR.</b> "+q.bad;
+      $("feedbackBox").innerHTML="<b>TYRIMO KLAIDA.</b> "+q.bad;
       $("damageFlash").classList.remove("fire");void $("damageFlash").offsetWidth;$("damageFlash").classList.add("fire");
       $("viewportShell").classList.remove("shake");void $("viewportShell").offsetWidth;$("viewportShell").classList.add("shake");
       updateHud();
