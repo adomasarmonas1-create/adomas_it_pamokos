@@ -30,7 +30,7 @@ button{cursor:pointer}
 .boot-logo{font-size:clamp(42px,8vw,92px);font-weight:900;letter-spacing:-.08em;color:#c8c3a4;text-shadow:4px 4px 0 #25332f}
 .boot-logo span{color:#a84346}
 .boot-sub{color:#738079;border-bottom:1px dashed #394640;padding-bottom:14px;margin-bottom:18px}
-#bootText{white-space:pre-wrap;line-height:1.7;color:#8db78a;min-height:220px;font-size:14px}
+#bootText{white-space:pre-wrap;line-height:1.7;color:#8db78a;min-height:150px;font-size:14px}\n.boot-click-hint{margin-top:14px;color:#65746d;font-size:11px;letter-spacing:.12em}
 
 /* AGENTS */
 .retro-head{display:flex;justify-content:space-between;gap:20px;border:3px double #3e4c4c;background:#090e10;padding:13px 16px;color:#b8c8bd}
