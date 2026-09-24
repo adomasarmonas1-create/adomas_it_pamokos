@@ -26,10 +26,10 @@
 VIETINĖ SESIJA ......... PRIVATI
 AGENTŲ DUOMENYS ......... 6 ĮRAŠAI
 
-WARNING: BYLA 6-S04 HAS UNRESOLVED ACTIVITY.
+ĮSPĖJIMAS: BYLOJE 6-S04 YRA NEIŠTIRTOS VEIKLOS.
 REIKALINGAS AGENTO PATVIRTINIMAS.</pre>
         <button class="pixel-btn" id="bootContinue">[ PRADĖTI TYRIMĄ ]</button>
-        <div class="boot-click-hint">PELĖ / TOUCH · KLAVIATŪRA NEREIKALINGA</div>
+        <div class="boot-click-hint">PELĖ / LIETIMAS · KLAVIATŪRA NEREIKALINGA</div>
       </div>
     </section>
 
@@ -78,7 +78,7 @@ REIKALINGAS AGENTO PATVIRTINIMAS.</pre>
         </div>
         <div class="hud-center">
           <span id="roomLabel">SEKTORIUS 01</span>
-          <strong id="roomName">MAIL GATEWAY</strong>
+          <strong id="roomName">PAŠTO VARTAI</strong>
         </div>
         <div class="hud-stats">
           <div>GYVYBĖS <span id="hpHud">♥♥♥</span></div>
@@ -97,15 +97,10 @@ REIKALINGAS AGENTO PATVIRTINIMAS.</pre>
           <div class="enemy-hp"><i id="enemyHpBar"></i></div>
         </div>
         <div class="objective" id="objectiveText">Ištirk incidentą.</div>
-        <div class="door-transition hidden" id="doorTransition">
-          <div class="door-title" id="doorTitle">SEKTORIUS IŠVALYTAS</div>
-          <div class="door-frame">
-            <div class="door-panel left"></div>
-            <div class="door-panel right"></div>
-            <div class="door-light"></div>
-          </div>
-          <div class="walk-lines"></div>
-          <div class="door-sub" id="doorSub">Durys atrakinamos...</div>
+        <div class="room-reveal hidden" id="roomReveal">
+          <span id="revealSector">SEKTORIUS 01</span>
+          <strong id="revealRoom">PAŠTO VARTAI</strong>
+          <small id="revealEnemy">GRĖSMĖ: LAIŠKŲ ŠMĖKLA</small>
         </div>
       </section>
 
@@ -159,11 +154,11 @@ REIKALINGAS AGENTO PATVIRTINIMAS.</pre>
       <div class="victory-wrap">
         <div class="victory-top">
           <canvas id="victoryPortrait" width="64" height="80"></canvas>
-          <div><div class="kicker">BYLA 6-S04 // CLOSED</div><h1>BYLA UŽDARYTA</h1><p id="victoryAgent"></p></div>
+          <div><div class="kicker">BYLA 6-S04 // UŽDARYTA</div><h1>BYLA UŽDARYTA</h1><p id="victoryAgent"></p></div>
         </div>
         <div class="report-grid">
           <div class="report-card"><small>TYRIMO TIKSLUMAS</small><strong id="accuracyStat">100%</strong></div>
-          <div class="report-card"><small>PĖDSAKAI TAŠKAI</small><strong id="scoreStat">0000</strong></div>
+          <div class="report-card"><small>PĖDSAKŲ TAŠKAI</small><strong id="scoreStat">0000</strong></div>
           <div class="report-card"><small>KLAIDINGOS IŠVADOS</small><strong id="mistakeStat">0</strong></div>
           <div class="report-card"><small>REITINGAS</small><strong id="rankStat">S</strong></div>
         </div>
