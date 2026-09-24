@@ -11,6 +11,10 @@
 <div id="crt">
   <div class="scanlines"></div>
   <div class="vignette"></div>
+  <nav class="global-nav">
+    <a href="../../../">⌂ PAGRINDINIS</a>
+    <a href="../">← BYLŲ ARCHYVAS</a>
+  </nav>
 
   <main id="app">
     <section class="screen active" id="screenBoot">
@@ -93,6 +97,16 @@ AUTHORIZATION REQUIRED.</pre>
           <div class="enemy-hp"><i id="enemyHpBar"></i></div>
         </div>
         <div class="objective" id="objectiveText">Ištirk incidentą.</div>
+        <div class="door-transition hidden" id="doorTransition">
+          <div class="door-title" id="doorTitle">SEKTORIUS IŠVALYTAS</div>
+          <div class="door-frame">
+            <div class="door-panel left"></div>
+            <div class="door-panel right"></div>
+            <div class="door-light"></div>
+          </div>
+          <div class="walk-lines"></div>
+          <div class="door-sub" id="doorSub">Durys atrakinamos...</div>
+        </div>
       </section>
 
       <section class="dialogue">
