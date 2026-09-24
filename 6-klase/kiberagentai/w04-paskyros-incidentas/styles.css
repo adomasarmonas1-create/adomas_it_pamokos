@@ -118,3 +118,24 @@ button{cursor:pointer}
  .bottom-command{align-items:stretch;flex-direction:column}.game-hud{height:auto}.hud-stats{gap:6px;flex-direction:column}
  .enemy-card{width:170px}.prompt-col>p{font-size:16px}.report-grid{grid-template-columns:1fr}
 }
+.global-nav{position:fixed;top:10px;left:12px;z-index:70;display:flex;gap:7px}
+.global-nav a{border:2px solid #303d3a;background:rgba(6,9,10,.92);color:#c6c3a7;text-decoration:none;padding:7px 9px;font-size:10px;font-weight:900;letter-spacing:.06em;box-shadow:3px 3px 0 #000}
+.global-nav a:hover{border-color:#a28a53;color:#f0e5bd}
+.enemy-card{width:260px;border:3px double #735052;background:rgba(9,5,7,.92);padding:10px}
+.enemy-card span{color:#d36a68;font-weight:900}.enemy-card b{font-size:14px;color:#f0d7b2;letter-spacing:.06em}
+.enemy-hp{height:10px;margin-top:8px;border:2px solid #080808}.enemy-hp i{background:linear-gradient(90deg,#732a30,#d45254)}
+.door-transition{position:absolute;inset:0;z-index:20;background:rgba(0,0,0,.28);display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
+.door-title{position:absolute;top:18px;z-index:7;border:2px solid #796d4b;background:#0b0d0c;color:#e0d1a2;padding:8px 13px;font-weight:900;letter-spacing:.12em;box-shadow:4px 4px 0 #000}
+.door-frame{width:44%;height:72%;position:relative;border:5px solid #212b29;background:#050707;box-shadow:0 0 0 5px #020303,0 0 40px #000}
+.door-panel{position:absolute;top:0;bottom:0;width:50%;background:linear-gradient(90deg,#101819,#263331,#101819);border:2px solid #394640;transition:transform .75s steps(7)}
+.door-panel.left{left:0;transform-origin:left center}.door-panel.right{right:0;transform-origin:right center}
+.door-light{position:absolute;inset:8px;background:radial-gradient(circle,#d4c173 0,#7d6b37 20%,#111815 58%,#050707 100%);opacity:.08;transition:opacity .5s}
+.door-transition.open .door-panel.left{transform:translateX(-95%)}.door-transition.open .door-panel.right{transform:translateX(95%)}.door-transition.open .door-light{opacity:.85}
+.door-sub{margin-top:14px;color:#b5aa82;font-size:12px;font-weight:900;letter-spacing:.08em}
+.walk-lines{position:absolute;inset:0;opacity:0;pointer-events:none;background:repeating-radial-gradient(circle at center,transparent 0 22px,rgba(208,194,132,.13) 24px 25px,transparent 27px 44px)}
+.door-transition.walk .walk-lines{opacity:1;animation:walkPulse .7s steps(5) infinite}
+@keyframes walkPulse{from{transform:scale(.8);opacity:.2}to{transform:scale(2);opacity:0}}
+.viewport-shell.walking #scene{animation:cameraWalk 1.2s steps(8) forwards}
+@keyframes cameraWalk{from{transform:scale(1)}to{transform:scale(1.26)}}
+.viewport-shell.room-cleared .enemy-card{opacity:.35}
+@media(max-width:700px){.global-nav{position:static;padding:8px 10px;background:#030405}.door-frame{width:62%;height:62%}.enemy-card{width:190px}}
