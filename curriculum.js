@@ -50,7 +50,7 @@ window.IT_CURRICULUM = {
   "6": {
     label:"6 klasė",
     kiberagentai:[
-      {week:4,date:"09.21–09.25",title:"Paskyros incidentas",status:"planned"},
+      {week:4,date:"09.21–09.25",title:"Paskyros incidentas",status:"prototype",url:"./w04-paskyros-incidentas/"},
       {week:5,date:"09.28–10.02",title:"Skaitmeninė kriminalistika – kuriuo įrodymu galima pasitikėti?",status:"prototype",engineId:"6-01"},
       {week:6,date:"10.05–10.09",title:"Informacijos patikra – vieno šaltinio neužtenka",status:"planned"},
       {week:8,date:"10.19–10.23",title:"Šifravimo laboratorija – kodavimas nėra šifravimas",status:"planned"}
