@@ -40,26 +40,17 @@
     window.scrollTo({top:0,behavior:"instant"});
   }
 
-  /* BOOT */
-  const bootLines=[
-    "KERNEL 6.04 ............ OK",
-    "EVIDENCE INDEX ......... MOUNTED",
-    "LOCAL SESSION .......... PRIVATE",
-    "NETWORK TRACE .......... DISABLED",
-    "AGENT DATABASE ......... 6 RECORDS",
-    "",
-    "WARNING: CASE 6-W04 HAS UNRESOLVED ACTIVITY.",
-    "AUTHORIZATION REQUIRED."
-  ];
-  let bootI=0;
-  function bootTick(){
-    if(bootI>=bootLines.length){$("bootContinue").classList.remove("hidden");return}
-    $("bootText").textContent += bootLines[bootI]+"\n";
-    bootI++;
-    setTimeout(bootTick,bootI<6?180:320);
+  /* BOOT — click/touch only */
+  function startFromBoot(){
+    if(!state.agent) renderAgents();
+    sfx("door");
+    show("screenAgents");
   }
-  setTimeout(bootTick,350);
-  $("bootContinue").onclick=()=>{sfx("door");renderAgents();show("screenAgents")};
+  $("bootContinue").onclick=startFromBoot;
+  $("screenBoot").onclick=(ev)=>{
+    if(ev.target.closest("button")) return;
+    startFromBoot();
+  };
 
   /* PIXEL PORTRAITS */
   const palettes=[
@@ -358,5 +349,6 @@
     // subtle random CRT spark
     if(Math.floor(ts/140)%17===0)rect(0,Math.floor((ts/7)%180),320,1,"rgba(190,240,220,.18)");
   }
+  renderAgents();
   requestAnimationFrame(drawFrame);
 })();
