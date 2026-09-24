@@ -392,7 +392,7 @@
     rect(82,139,156,41,"#101617");rect(91,145,138,35,"#192225");
     rect(102,149,56,17,"#0b1011");rect(106,152,48,11,p[2]);
     for(let i=0;i<7;i++)rect(169+i*7,151,4,4,i%3===0?p[4]:"#65766e");
-    text(state.agent?state.agent.id.toUpperCase():"AGENT",107,160,"#d2c58b",6);
+    text(state.agent?state.agent.id.toUpperCase():"AGENTAS",107,160,"#d2c58b",6);
     // subtle random CRT spark
     if(Math.floor(ts/140)%17===0)rect(0,Math.floor((ts/7)%180),320,1,"rgba(190,240,220,.18)");
   }
