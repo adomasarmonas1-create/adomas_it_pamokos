@@ -3,12 +3,12 @@ window.CASE_W04 = {
   title:"Paskyros incidentas",
   briefing:"11:42 mokyklos paskyroje užfiksuotas prisijungimas iš naujo įrenginio. 11:51 iš tos paskyros bendraklasiams išsiųstos žinutės su nuoroda. Paskyros savininkas teigia jų nesiuntęs. Tavo užduotis – atskirti faktus nuo prielaidų, susieti įrodymus ir sudaryti saugų veiksmų planą.",
   agents:[
-    {id:"echo",name:"AGENT ECHO",role:"SIGNALŲ ANALITIKAS",desc:"Ramus, metodiškas, tikrina kiekvieną pėdsaką.",skin:0},
-    {id:"mira",name:"AGENT MIRA",role:"ĮRODYMŲ TYRĖJA",desc:"Sprendžia tik tada, kai turi pakankamai įrodymų.",skin:1},
-    {id:"vanta",name:"AGENT VANTA",role:"INCIDENTŲ VALDYMAS",desc:"Greitai pastebi rizikos ženklus ir anomalijas.",skin:2},
-    {id:"nova",name:"AGENT NOVA",role:"PĖDSAKŲ SPECIALISTĖ",desc:"Mėgsta chronologiją ir ieško ryšio tarp įvykių.",skin:3},
-    {id:"rook",name:"AGENT ROOK",role:"SISTEMŲ TYRĖJAS",desc:"Pirmiausia tikrina sistemą, tik tada daro išvadas.",skin:4},
-    {id:"iris",name:"AGENT IRIS",role:"INFORMACIJOS ANALITIKĖ",desc:"Lygina kelias versijas ir ieško neatitikimų.",skin:5}
+    {id:"echo",name:"AGENTAS AIDAS",role:"SIGNALŲ ANALITIKAS",desc:"Ramus, metodiškas, tikrina kiekvieną pėdsaką.",skin:0},
+    {id:"mira",name:"AGENTĖ MIRA",role:"ĮRODYMŲ TYRĖJA",desc:"Sprendžia tik tada, kai turi pakankamai įrodymų.",skin:1},
+    {id:"vanta",name:"AGENTAS VANTA",role:"INCIDENTŲ VALDYMAS",desc:"Greitai pastebi rizikos ženklus ir anomalijas.",skin:2},
+    {id:"nova",name:"AGENTĖ NOVA",role:"PĖDSAKŲ SPECIALISTĖ",desc:"Mėgsta chronologiją ir ieško ryšio tarp įvykių.",skin:3},
+    {id:"rook",name:"AGENTAS BOKŠTAS",role:"SISTEMŲ TYRĖJAS",desc:"Pirmiausia tikrina sistemą, tik tada daro išvadas.",skin:4},
+    {id:"iris",name:"AGENTĖ IRIS",role:"INFORMACIJOS ANALITIKĖ",desc:"Lygina kelias versijas ir ieško neatitikimų.",skin:5}
   ],
   rooms:[
     {
