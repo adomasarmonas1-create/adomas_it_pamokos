@@ -80,8 +80,13 @@ button{cursor:pointer}
 
 .dialogue{margin-top:8px;border:5px double #485451;background:#080d0f;box-shadow:8px 8px 0 #000}
 .dialogue-top{display:flex;justify-content:space-between;padding:8px 12px;border-bottom:2px solid #303c3b;color:#6ea9aa;font-size:11px;letter-spacing:.12em}
-.dialogue-body{display:grid;grid-template-columns:.88fr 1.12fr;min-height:230px}
-.prompt-col{padding:16px;border-right:2px solid #303c3b}.prompt-col>p{font-size:18px;line-height:1.45;margin:0 0 14px;color:#ded9ba;font-weight:700}
+.question-focus{margin:12px 12px 0;border:3px double #8d7b4d;background:linear-gradient(180deg,#211f15,#151712);box-shadow:4px 4px 0 #000;padding:14px 16px;position:relative}
+.question-focus:before{content:"";position:absolute;left:8px;right:8px;bottom:-5px;height:2px;background:#3a3a2a}
+.question-label{display:inline-block;color:#d7aa58;font-size:10px;letter-spacing:.16em;font-weight:900;margin-bottom:6px}
+.question-focus p{margin:0;color:#f2ebc7;font-size:22px;line-height:1.35;font-weight:900;text-shadow:2px 2px 0 #000}
+.dialogue-body{display:grid;grid-template-columns:.88fr 1.12fr;min-height:220px}
+.prompt-col{padding:16px;border-right:2px solid #303c3b}
+.evidence-title{font-size:10px;color:#859b8f;letter-spacing:.14em;font-weight:900;margin-bottom:8px}
 .evidence-strip{display:grid;gap:7px}.evidence-note{border:1px solid #3a4947;background:#0e1618;padding:8px;font-size:12px;line-height:1.4;color:#95a39a}.evidence-note b{color:#d0ae62}
 .answer-col{padding:14px;display:flex;flex-direction:column}
 #answerArea{display:grid;gap:8px}.answer-btn,.select-btn,.order-btn{width:100%;text-align:left;border:2px solid #3a4745;background:#11191b;color:#c6cebf;padding:10px 12px;font:inherit;font-weight:700;line-height:1.35;box-shadow:2px 2px 0 #000}
@@ -108,6 +113,7 @@ button{cursor:pointer}
  .game-hud{grid-template-columns:1fr auto}.hud-center{display:none}.report-grid{grid-template-columns:1fr 1fr}
 }
 @media(max-width:560px){
+ .question-focus p{font-size:18px}
  .screen{padding:10px}.agent-grid{grid-template-columns:1fr}.agent-card{grid-template-columns:72px 1fr}.agent-card canvas{width:72px;height:90px}
  .bottom-command{align-items:stretch;flex-direction:column}.game-hud{height:auto}.hud-stats{gap:6px;flex-direction:column}
  .enemy-card{width:170px}.prompt-col>p{font-size:16px}.report-grid{grid-template-columns:1fr}
