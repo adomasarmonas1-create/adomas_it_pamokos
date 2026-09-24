@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="lt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>KIBERAGENTAI – IT misijos 2–6 klasėms</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <a class="home-link" href="../">← IT pasauliai</a>
+      <div class="brand">
+        <span class="brand-mark">◈</span>
+        <div>
+          <strong>KIBERAGENTAI</strong>
+          <small>bylomis grįstas kibernetinio raštingumo pasaulis</small>
+        </div>
+      </div>
+      <div class="status" id="statusChip">PASIRUOŠĘS</div>
+    </header>
+
+    <section class="hero" id="catalogView">
+      <div class="hero-copy">
+        <div class="eyebrow">2–6 klasės · vienas variklis · atskiri lygiai</div>
+        <h1>Pasirink klasę. Atidaryk bylą. Rask įrodymus.</h1>
+        <p>Kiekviena klasė gauna savo amžiui tinkamas situacijas. Naujiems lygiams nereikia naujo žaidimo – jie tiesiog pridedami į lygio duomenis.</p>
+      </div>
+
+      <div class="grade-strip" id="gradeStrip" aria-label="Klasių pasirinkimas"></div>
+
+      <div class="catalog-head">
+        <div>
+          <span class="tiny-label">AKTYVI KLASĖ</span>
+          <h2 id="gradeTitle">Pasirink klasę</h2>
+        </div>
+        <p id="gradeGoal"></p>
+      </div>
+
+      <div class="level-grid" id="levelGrid"></div>
+    </section>
+
+    <section class="game-view hidden" id="gameView">
+      <div class="game-head">
+        <button class="ghost-btn" id="backBtn">← Bylų sąrašas</button>
+        <div class="case-id" id="caseId"></div>
+        <div class="hud">
+          <span id="stageHud">1 / 1</span>
+          <span id="xpHud">XP 0</span>
+        </div>
+      </div>
+
+      <div class="progress-track"><div id="progressBar"></div></div>
+
+      <section class="case-card">
+        <div class="case-kicker" id="caseKicker"></div>
+        <h2 id="caseTitle"></h2>
+        <p class="case-brief" id="caseBrief"></p>
+      </section>
+
+      <section class="evidence-board" id="evidenceBoard"></section>
+
+      <section class="task-card">
+        <div class="task-label">SPRENDIMAS</div>
+        <h3 id="taskPrompt"></h3>
+        <div class="choices" id="choices"></div>
+        <div class="feedback hidden" id="feedback"></div>
+        <div class="task-actions">
+          <button class="primary-btn hidden" id="nextBtn">Toliau →</button>
+        </div>
+      </section>
+    </section>
+
+    <section class="finish-view hidden" id="finishView">
+      <div class="finish-icon">✓</div>
+      <div class="eyebrow">BYLA UŽDARYTA</div>
+      <h2 id="finishTitle"></h2>
+      <p id="finishText"></p>
+      <div class="score-card" id="scoreCard"></div>
+      <div class="finish-actions">
+        <button class="primary-btn" id="replayBtn">Kartoti lygį</button>
+        <button class="ghost-btn" id="finishBackBtn">Kitos bylos</button>
+      </div>
+    </section>
+
+    <footer>
+      <span>Duomenys niekur nesiunčiami. Progresas saugomas tik šios sesijos metu.</span>
+      <span>Prototype 0.1</span>
+    </footer>
+  </main>
+
+  <script src="./levels.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
