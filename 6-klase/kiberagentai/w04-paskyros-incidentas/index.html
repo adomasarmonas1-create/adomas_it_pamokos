@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="lt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+  <meta name="theme-color" content="#05070a">
+  <title>KIBERAGENTAI // W04 // Paskyros incidentas</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<div id="crt">
+  <div class="scanlines"></div>
+  <div class="vignette"></div>
+
+  <main id="app">
+    <section class="screen active" id="screenBoot">
+      <div class="boot-box">
+        <div class="boot-logo">KIBER<span>AGENTAI</span></div>
+        <div class="boot-sub">CYBER INVESTIGATION UNIT // 199X ARCHIVE BUILD</div>
+        <pre id="bootText"></pre>
+        <button class="pixel-btn hidden" id="bootContinue">[ PRISIJUNGTI ]</button>
+      </div>
+    </section>
+
+    <section class="screen" id="screenAgents">
+      <header class="retro-head">
+        <div><b>KIBERAGENTAI</b><span> // PERSONALO TERMINALAS</span></div>
+        <div class="blink">● ONLINE</div>
+      </header>
+      <div class="agent-intro">
+        <div class="kicker">NAUJAS TYRIMAS</div>
+        <h1>PASIRINK AGENTĄ</h1>
+        <p>Portretas bus rodomas tavo byloje. Tyrimą matysi pirmuoju asmeniu.</p>
+      </div>
+      <div class="agent-grid" id="agentGrid"></div>
+      <div class="bottom-command">
+        <div id="agentHint">Pasirink vieną agentą.</div>
+        <button class="pixel-btn" id="agentContinue" disabled>[ PATVIRTINTI AGENTĄ ]</button>
+      </div>
+    </section>
+
+    <section class="screen" id="screenBriefing">
+      <div class="brief-layout">
+        <aside class="brief-agent">
+          <canvas id="briefPortrait" width="64" height="80"></canvas>
+          <div id="briefAgentName"></div>
+          <small>6 KLASĖ // SEKTORIUS 04</small>
+        </aside>
+        <article class="brief-file">
+          <div class="stamp">CLASSIFIED</div>
+          <div class="kicker">CASE 6-W04 // SHADOW LOGIN</div>
+          <h1>PASKYROS INCIDENTAS</h1>
+          <div class="typewriter" id="briefCopy"></div>
+          <div class="brief-evidence">
+            <span>📨 LAIŠKAI</span><span>💬 ŽINUTĖS</span><span>🕒 PRISIJUNGIMAI</span><span>📁 FAILAI</span>
+          </div>
+          <button class="pixel-btn danger" id="enterCase">[ ATIDARYTI BYLĄ ]</button>
+        </article>
+      </div>
+    </section>
+
+    <section class="screen" id="screenGame">
+      <header class="game-hud">
+        <div class="hud-agent">
+          <canvas id="hudPortrait" width="40" height="48"></canvas>
+          <div><b id="hudAgentName">AGENT</b><small id="hudCase">CASE 6-W04</small></div>
+        </div>
+        <div class="hud-center">
+          <span id="roomLabel">SEKTORIUS 01</span>
+          <strong id="roomName">MAIL GATEWAY</strong>
+        </div>
+        <div class="hud-stats">
+          <div>HP <span id="hpHud">♥♥♥</span></div>
+          <div>TRACE <span id="traceHud">000</span></div>
+        </div>
+      </header>
+
+      <section class="viewport-shell" id="viewportShell">
+        <canvas id="scene" width="320" height="180"></canvas>
+        <div class="scene-noise"></div>
+        <div class="damage-flash" id="damageFlash"></div>
+        <div class="hit-flash" id="hitFlash"></div>
+        <div class="enemy-card">
+          <span id="enemyTag">HOSTILE SIGNAL</span>
+          <b id="enemyName">PHANTOM MAILER</b>
+          <div class="enemy-hp"><i id="enemyHpBar"></i></div>
+        </div>
+        <div class="objective" id="objectiveText">Ištirk incidentą.</div>
+      </section>
+
+      <section class="dialogue">
+        <div class="dialogue-top">
+          <span id="questionCode">Q01</span>
+          <span id="questionType">ANALIZĖ</span>
+        </div>
+        <div class="dialogue-body">
+          <div class="prompt-col">
+            <p id="promptText"></p>
+            <div class="evidence-strip" id="evidenceStrip"></div>
+          </div>
+          <div class="answer-col">
+            <div id="answerArea"></div>
+            <div class="feedback hidden" id="feedbackBox"></div>
+          </div>
+        </div>
+        <div class="dialogue-actions">
+          <span id="progressText">1 / 5</span>
+          <button class="pixel-btn hidden" id="nextQuestion">[ TĘSTI ]</button>
+        </div>
+      </section>
+    </section>
+
+    <section class="screen" id="screenCutscene">
+      <div class="cutscene-box">
+        <div class="cut-glitch" id="cutTitle">SEKTORIUS IŠVALYTAS</div>
+        <div class="pixel-line"></div>
+        <p id="cutText"></p>
+        <button class="pixel-btn" id="cutContinue">[ LEISTIS GILIAU ]</button>
+      </div>
+    </section>
+
+    <section class="screen" id="screenGameOver">
+      <div class="end-box fail">
+        <div class="huge">SIGNAL LOST</div>
+        <h1>AGENTAS ATJUNGTAS</h1>
+        <p>Šiame sektoriuje padarei per daug nepagrįstų sprendimų. Byla liko atvira.</p>
+        <button class="pixel-btn danger" id="retryRoom">[ KARTOTI SEKTORIŲ ]</button>
+      </div>
+    </section>
+
+    <section class="screen" id="screenVictory">
+      <div class="victory-wrap">
+        <div class="victory-top">
+          <canvas id="victoryPortrait" width="64" height="80"></canvas>
+          <div><div class="kicker">CASE 6-W04 // CLOSED</div><h1>BYLA UŽDARYTA</h1><p id="victoryAgent"></p></div>
+        </div>
+        <div class="report-grid">
+          <div class="report-card"><small>TYRIMO TIKSLUMAS</small><strong id="accuracyStat">100%</strong></div>
+          <div class="report-card"><small>TRACE TAŠKAI</small><strong id="scoreStat">0000</strong></div>
+          <div class="report-card"><small>KLAIDINGOS IŠVADOS</small><strong id="mistakeStat">0</strong></div>
+          <div class="report-card"><small>REITINGAS</small><strong id="rankStat">S</strong></div>
+        </div>
+        <div class="final-report">
+          <h2>GALUTINĖ INCIDENTO IŠVADA</h2>
+          <p>Turimi įrodymai labiausiai pagrindžia paskyros duomenų nutekėjimo per apgaulingą prisijungimo puslapį hipotezę. Vien prisijungimo žurnalas neįrodo, kas fiziškai naudojosi įrenginiu, todėl išvada remiasi kelių požymių visuma.</p>
+          <ol><li>Pakeisti slaptažodį per tikrą paskyros puslapį.</li><li>Atsijungti nuo kitų aktyvių sesijų ir patikrinti paskyros veiklą.</li><li>Pranešti atsakingam suaugusiajam / IT administratoriui ir neplatinti pavojingos nuorodos.</li></ol>
+        </div>
+        <div class="finish-actions">
+          <a class="pixel-btn secondary" href="../">[ BYLŲ ARCHYVAS ]</a>
+          <button class="pixel-btn" id="replayGame">[ KARTOTI BYLĄ ]</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="./case-data.js"></script>
+<script src="./game.js"></script>
+</body>
+</html>
