@@ -1,18 +1,18 @@
 window.CASE_W04 = {
-  code:"CASE 6-W04 // SHADOW LOGIN",
+  code:"BYLA 6-S04 // ŠEŠĖLINIS PRISIJUNGIMAS",
   title:"Paskyros incidentas",
   briefing:"11:42 mokyklos paskyroje užfiksuotas prisijungimas iš naujo įrenginio. 11:51 iš tos paskyros bendraklasiams išsiųstos žinutės su nuoroda. Paskyros savininkas teigia jų nesiuntęs. Tavo užduotis – atskirti faktus nuo prielaidų, susieti įrodymus ir sudaryti saugų veiksmų planą.",
   agents:[
-    {id:"echo",name:"AGENT ECHO",role:"SIGNAL ANALYST",desc:"Ramus, metodiškas, tikrina kiekvieną pėdsaką.",skin:0},
-    {id:"mira",name:"AGENT MIRA",role:"EVIDENCE UNIT",desc:"Sprendžia tik tada, kai turi pakankamai įrodymų.",skin:1},
-    {id:"vanta",name:"AGENT VANTA",role:"INCIDENT RESPONSE",desc:"Greitai pastebi rizikos ženklus ir anomalijas.",skin:2},
-    {id:"nova",name:"AGENT NOVA",role:"TRACE SPECIALIST",desc:"Mėgsta chronologiją ir ieško ryšio tarp įvykių.",skin:3},
-    {id:"rook",name:"AGENT ROOK",role:"SYSTEMS UNIT",desc:"Pirmiausia tikrina sistemą, tik tada daro išvadas.",skin:4},
-    {id:"iris",name:"AGENT IRIS",role:"INTEL UNIT",desc:"Lygina kelias versijas ir ieško neatitikimų.",skin:5}
+    {id:"echo",name:"AGENT ECHO",role:"SIGNALŲ ANALITIKAS",desc:"Ramus, metodiškas, tikrina kiekvieną pėdsaką.",skin:0},
+    {id:"mira",name:"AGENT MIRA",role:"ĮRODYMŲ TYRĖJA",desc:"Sprendžia tik tada, kai turi pakankamai įrodymų.",skin:1},
+    {id:"vanta",name:"AGENT VANTA",role:"INCIDENTŲ VALDYMAS",desc:"Greitai pastebi rizikos ženklus ir anomalijas.",skin:2},
+    {id:"nova",name:"AGENT NOVA",role:"PĖDSAKŲ SPECIALISTĖ",desc:"Mėgsta chronologiją ir ieško ryšio tarp įvykių.",skin:3},
+    {id:"rook",name:"AGENT ROOK",role:"SISTEMŲ TYRĖJAS",desc:"Pirmiausia tikrina sistemą, tik tada daro išvadas.",skin:4},
+    {id:"iris",name:"AGENT IRIS",role:"INFORMACIJOS ANALITIKĖ",desc:"Lygina kelias versijas ir ieško neatitikimų.",skin:5}
   ],
   rooms:[
     {
-      id:"gateway",label:"SEKTORIUS 01",name:"MAIL GATEWAY",enemy:"PHANTOM MAILER",enemyTag:"SOCIAL ENGINEERING TRACE",theme:"gateway",
+      id:"gateway",label:"SEKTORIUS 01",name:"PAŠTO VARTAI",enemy:"LAIŠKŲ ŠMĖKLA",enemyTag:"SOCIALINĖS INŽINERIJOS PĖDSAKAS",theme:"gateway",
       objective:"Patikrink laišką ir nustatyk, kurie požymiai iš tikrųjų svarbūs.",
       cut:"Pirmas pėdsakas patvirtintas. Laiškas turi kelis phishing požymius. Tačiau tai dar neįrodo, kas vėliau prisijungė prie paskyros.",
       challenges:[
@@ -24,7 +24,7 @@ window.CASE_W04 = {
       ]
     },
     {
-      id:"vault",label:"SEKTORIUS 02",name:"LOGIN VAULT",enemy:"SESSION WRAITH",enemyTag:"UNAUTHORIZED SESSION",theme:"vault",
+      id:"vault",label:"SEKTORIUS 02",name:"PRISIJUNGIMŲ SAUGYKLA",enemy:"SESIJŲ ŠMĖKLA",enemyTag:"NEPATVIRTINTA SESIJA",theme:"vault",
       objective:"Atkurk įvykių chronologiją ir neperženk to, ką įrodymai leidžia teigti.",
       cut:"Prisijungimo pėdsakas rastas. Nauja sesija atsirado po apgaulingo puslapio atidarymo, bet žurnalas nepasako, kas fiziškai sėdėjo prie įrenginio.",
       challenges:[
@@ -36,7 +36,7 @@ window.CASE_W04 = {
       ]
     },
     {
-      id:"archive",label:"SEKTORIUS 03",name:"EVIDENCE ARCHIVE",enemy:"MIRROR FILE",enemyTag:"CONTEXT CORRUPTION",theme:"archive",
+      id:"archive",label:"SEKTORIUS 03",name:"ĮRODYMŲ ARCHYVAS",enemy:"VEIDRODINIS FAILAS",enemyTag:"IŠKRAIPYTAS KONTEKSTAS",theme:"archive",
       objective:"Palygink įrodymų vertę: žinutės, ekranvaizdžiai, originalūs failai ir versijų istorija.",
       cut:"Bylos kontekstas atkurtas. Svarbiausi buvo ne gražiausiai atrodantys įrodymai, o tie, kurių kilmę ir laiką galima patikrinti.",
       challenges:[
@@ -48,7 +48,7 @@ window.CASE_W04 = {
       ]
     },
     {
-      id:"core",label:"SEKTORIUS 04",name:"CONTAINMENT CORE",enemy:"GLITCH // ROOT",enemyTag:"BOSS // INCIDENT CORE",theme:"core",
+      id:"core",label:"SEKTORIUS 04",name:"IZOLIAVIMO BRANDUOLYS",enemy:"ŠAKNINIS TRIKDIS",enemyTag:"BOSAS // INCIDENTO BRANDUOLYS",theme:"core",
       objective:"Uždaryk incidentą: pasirink pagrįstą hipotezę ir sudėliok saugų veiksmų planą.",
       cut:"",
       challenges:[
