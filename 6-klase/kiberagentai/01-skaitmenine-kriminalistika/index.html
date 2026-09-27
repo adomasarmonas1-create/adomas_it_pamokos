@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="lt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+  <meta name="theme-color" content="#05070a">
+  <title>KIBERAGENTAI // L01 // Skaitmeninė kriminalistika</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<div id="crt">
+  <div class="scanlines"></div>
+  <div class="vignette"></div>
+  <nav class="global-nav">
+    <a href="../../../">⌂ PAGRINDINIS</a>
+    <a href="../">← BYLŲ ARCHYVAS</a>
+  </nav>
+
+  <main id="app">
+    <section class="screen active" id="screenBoot">
+      <div class="boot-box">
+        <div class="boot-logo">KIBER<span>AGENTAI</span></div>
+        <div class="boot-sub">KIBER TYRIMŲ SKYRIUS // 199X ARCHYVO VERSIJA</div>
+        <pre id="bootText">SISTEMOS BRANDUOLYS 6.04 .... GERAI
+ĮRODYMŲ RODYKLĖ ........ PARUOŠTA
+VIETINĖ SESIJA ......... PRIVATI
+AGENTŲ DUOMENYS ......... 6 ĮRAŠAI
+
+ĮSPĖJIMAS: BYLOJE 6-L01 APTIKTAS ĮTARTINAS PRANEŠIMAS.
+REIKALINGAS AGENTO PATVIRTINIMAS.</pre>
+        <button class="pixel-btn" id="bootContinue">[ PRADĖTI TYRIMĄ ]</button>
+        <div class="boot-click-hint">PELĖ / LIETIMAS · KLAVIATŪRA NEREIKALINGA</div>
+      </div>
+    </section>
+
+    <section class="screen" id="screenAgents">
+      <header class="retro-head">
+        <div><b>KIBERAGENTAI</b><span> // AGENTŲ TERMINALAS</span></div>
+        <div class="blink">● PRISIJUNGTA</div>
+      </header>
+      <div class="agent-intro">
+        <div class="kicker">NAUJAS TYRIMAS</div>
+        <h1>PASIRINK AGENTĄ</h1>
+        <p>Portretas bus rodomas tavo byloje. Tyrimą matysi pirmuoju asmeniu.</p>
+      </div>
+      <div class="agent-grid" id="agentGrid"></div>
+      <div class="bottom-command">
+        <div id="agentHint">Pasirink vieną agentą.</div>
+        <button class="pixel-btn" id="agentContinue" disabled>[ PATVIRTINTI AGENTĄ ]</button>
+      </div>
+    </section>
+
+    <section class="screen" id="screenBriefing">
+      <div class="brief-layout">
+        <aside class="brief-agent">
+          <canvas id="briefPortrait" width="64" height="80"></canvas>
+          <div id="briefAgentName"></div>
+          <small>6 KLASĖ // LYGIS 01</small>
+        </aside>
+        <article class="brief-file">
+          <div class="stamp">SLAPTA</div>
+          <div class="kicker">BYLA 6-L01 // NETIKRAS PERSPĖJIMAS</div>
+          <h1>SKAITMENINĖ KRIMINALISTIKA</h1>
+          <div class="typewriter" id="briefCopy"></div>
+          <div class="brief-evidence">
+            <span>📨 LAIŠKAS</span><span>💬 POKALBIS</span><span>🧬 METADUOMENYS</span><span>⏳ VERSIJOS</span>
+          </div>
+          <button class="pixel-btn danger" id="enterCase">[ ATIDARYTI BYLĄ ]</button>
+        </article>
+      </div>
+    </section>
+
+    <section class="screen" id="screenGame">
+      <header class="game-hud">
+        <div class="hud-agent">
+          <canvas id="hudPortrait" width="40" height="48"></canvas>
+          <div><b id="hudAgentName">AGENTAS</b><small id="hudCase">BYLA 6-L01</small></div>
+        </div>
+        <div class="hud-center">
+          <span id="roomLabel">SEKTORIUS 01</span>
+          <strong id="roomName">SIGNALO VARTAI</strong>
+        </div>
+        <div class="hud-stats">
+          <div>GYVYBĖS <span id="hpHud">♥♥♥</span></div>
+          <div>PĖDSAKAI <span id="traceHud">000</span></div>
+        </div>
+      </header>
+
+      <section class="viewport-shell" id="viewportShell">
+        <canvas id="scene" width="320" height="180"></canvas>
+        <div class="scene-noise"></div>
+        <div class="damage-flash" id="damageFlash"></div>
+        <div class="hit-flash" id="hitFlash"></div>
+        <div class="enemy-card">
+          <span id="enemyTag">GRĖSMĖ</span>
+          <b id="enemyName">SIGNALO SARGAS</b>
+          <div class="enemy-hp"><i id="enemyHpBar"></i></div>
+        </div>
+        <div class="objective" id="objectiveText">Patikrink įrodymus ir neperženk to, ką jie leidžia teigti.</div>
+        <div class="room-reveal hidden" id="roomReveal">
+          <span id="revealSector">SEKTORIUS 01</span>
+          <strong id="revealRoom">PAŠTO VARTAI</strong>
+          <small id="revealEnemy">GRĖSMĖ: LAIŠKŲ ŠMĖKLA</small>
+        </div>
+      </section>
+
+      <section class="dialogue">
+        <div class="dialogue-top">
+          <span id="questionCode">K01</span>
+          <span id="questionType">ANALIZĖ</span>
+        </div>
+
+        <div class="question-focus">
+          <span class="question-label">TYRIMO KLAUSIMAS</span>
+          <p id="promptText"></p>
+        </div>
+
+        <div class="dialogue-body">
+          <div class="prompt-col">
+            <div class="evidence-title">TURIMI ĮRODYMAI</div>
+            <div class="evidence-strip" id="evidenceStrip"></div>
+          </div>
+          <div class="answer-col">
+            <div id="answerArea"></div>
+            <div class="feedback hidden" id="feedbackBox"></div>
+          </div>
+        </div>
+        <div class="dialogue-actions">
+          <span id="progressText">1 / 5</span>
+          <button class="pixel-btn hidden" id="nextQuestion">[ TĘSTI ]</button>
+        </div>
+      </section>
+    </section>
+
+    <section class="screen" id="screenCutscene">
+      <div class="cutscene-box">
+        <div class="cut-glitch" id="cutTitle">SEKTORIUS IŠVALYTAS</div>
+        <div class="pixel-line"></div>
+        <p id="cutText"></p>
+        <button class="pixel-btn" id="cutContinue">[ LEISTIS GILIAU ]</button>
+      </div>
+    </section>
+
+    <section class="screen" id="screenGameOver">
+      <div class="end-box fail">
+        <div class="huge">RYŠYS NUTRŪKO</div>
+        <h1>AGENTAS ATJUNGTAS</h1>
+        <p>Šiame sektoriuje padarei per daug nepagrįstų sprendimų. Byla liko atvira.</p>
+        <button class="pixel-btn danger" id="retryRoom">[ KARTOTI SEKTORIŲ ]</button>
+      </div>
+    </section>
+
+    <section class="screen" id="screenVictory">
+      <div class="victory-wrap">
+        <div class="victory-top">
+          <canvas id="victoryPortrait" width="64" height="80"></canvas>
+          <div><div class="kicker">BYLA 6-L01 // UŽDARYTA</div><h1>BYLA UŽDARYTA</h1><p id="victoryAgent"></p></div>
+        </div>
+        <div class="report-grid">
+          <div class="report-card"><small>TYRIMO TIKSLUMAS</small><strong id="accuracyStat">100%</strong></div>
+          <div class="report-card"><small>PĖDSAKŲ TAŠKAI</small><strong id="scoreStat">0000</strong></div>
+          <div class="report-card"><small>KLAIDINGOS IŠVADOS</small><strong id="mistakeStat">0</strong></div>
+          <div class="report-card"><small>REITINGAS</small><strong id="rankStat">S</strong></div>
+        </div>
+        <div class="final-report">
+          <h2>GALUTINĖ INCIDENTO IŠVADA</h2>
+          <p>Laiškas turi kelis nepatikimumo požymius, o failo savybės nesutampa su tuo, kaip priedas pateiktas laiške. Pokalbio žinutės suteikia kontekstą, bet neįrodo jų turinio teisingumo. Turimų įrodymų pakanka laikyti pranešimą įtartinu, tačiau nepakanka patikimai nustatyti konkretų kaltininką.</p>
+          <ol><li>Neatidaryti priedo ir nespausti įtartinų nuorodų.</li><li>Patikrinti pranešimą per oficialų, nepriklausomai atidarytą kanalą.</li><li>Išsaugoti tyrimui reikalingus įrodymus ir pranešti atsakingam žmogui.</li></ol>
+        </div>
+        <div class="finish-actions">
+          <a class="pixel-btn secondary" href="../">[ BYLŲ ARCHYVAS ]</a>
+          <button class="pixel-btn" id="replayGame">[ KARTOTI BYLĄ ]</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="./case-data.js"></script>
+<script src="./game.js"></script>
+</body>
+</html>
