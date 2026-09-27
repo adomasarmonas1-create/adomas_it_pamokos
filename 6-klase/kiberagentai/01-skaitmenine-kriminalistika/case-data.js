@@ -1,0 +1,63 @@
+window.CASE_L01 = {
+  code:"BYLA 6-L01 // NETIKRAS PERSPĖJIMAS",
+  title:"Skaitmeninė kriminalistika",
+  briefing:"Gautas oficialiai atrodantis perspėjimas su priedu. Pokalbiuose žmonės pateikia skirtingas versijas, o failo savybės kelia papildomų klausimų. Tavo užduotis – palyginti skaitmeninius įrodymus, atskirti faktus nuo prielaidų, suprasti metaduomenų ir versijų istorijos reikšmę ir padaryti tik tokią išvadą, kokią leidžia turimi duomenys.",
+  agents:[
+    {id:"echo",name:"AGENTAS AIDAS",role:"SIGNALŲ ANALITIKAS",desc:"Ramus, metodiškas, tikrina kiekvieną pėdsaką.",skin:0},
+    {id:"mira",name:"AGENTĖ MIRA",role:"ĮRODYMŲ TYRĖJA",desc:"Sprendžia tik tada, kai turi pakankamai įrodymų.",skin:1},
+    {id:"vanta",name:"AGENTAS VANTA",role:"INCIDENTŲ VALDYMAS",desc:"Greitai pastebi rizikos ženklus ir anomalijas.",skin:2},
+    {id:"nova",name:"AGENTĖ NOVA",role:"PĖDSAKŲ SPECIALISTĖ",desc:"Mėgsta chronologiją ir ieško ryšio tarp įvykių.",skin:3},
+    {id:"rook",name:"AGENTAS BOKŠTAS",role:"SISTEMŲ TYRĖJAS",desc:"Pirmiausia tikrina sistemą, tik tada daro išvadas.",skin:4},
+    {id:"iris",name:"AGENTĖ IRIS",role:"INFORMACIJOS ANALITIKĖ",desc:"Lygina kelias versijas ir ieško neatitikimų.",skin:5}
+  ],
+  rooms:[
+    {
+      id:"signal",label:"SEKTORIUS 01",name:"SIGNALO VARTAI",enemy:"SIGNALO SARGAS",enemyTag:"NEPATIKRINTAS ŠALTINIS",theme:"gateway",
+      objective:"Ištirk laišką. Atskirk įtarimo požymius nuo tikrų įrodymų.",
+      cut:"Laiško požymiai patikrinti. Oficialus vaizdas nėra patikimumo garantija. Toliau reikia patikrinti, ką iš tikrųjų žinome iš žmonių žinučių.",
+      challenges:[
+        {type:"choice",prompt:"Kuris požymių derinys labiausiai verčia abejoti laiško patikimumu?",evidence:["Tema: „Jūsų paskyra bus užblokuota“","Siuntėjas: pagalba.mokykla@gmail.com","Tekstas: „Per 48 valandas atidarykite priedą ir patvirtinkite duomenis.“"],options:["Laiške yra pasisveikinimas ir parašas.","Skubinimas, prašymas atidaryti priedą ir neįprastas kontaktinis adresas sutampa.","Laiške yra PDF pavadinimas."],correct:1,good:"Teisingai. Keli tarpusavyje sutampantys rizikos požymiai yra svarbesni už vieną paviršinę detalę.",bad:"Ieškok kelių patikrinamų rizikos ženklų, o ne to, kas tiesiog atrodo neįprastai."},
+        {type:"choice",prompt:"Laiške parašyta: „Jūsų paskyroje aptikta neleistina veikla.“ Ką šiuo metu turime?",evidence:["Turime tik patį laišką.","Nepriklausomo sistemos pranešimo dar netikrinome."],options:["Patvirtintą faktą apie paskyrą.","Laiško autoriaus teiginį, kurį dar reikia patikrinti.","Failo metaduomenį."],correct:1,good:"Taip. Teiginys dar nėra įrodymas, kad paskyroje tikrai buvo incidentas.",bad:"Tai, kad kažkas parašyta laiške, patvirtina laiško turinį, bet ne automatiškai jo teisingumą."},
+        {type:"multi",prompt:"Pasirink DU dalykus, kuriuos verta patikrinti prieš atidarant priedą.",options:["Tikslų siuntėjo adresą / domeną","Ar laiške naudojamas gražus logotipas","Ar toks perspėjimas matomas oficialiame mokyklos kanale","Ar laiškas turi daug teksto"],correct:[0,2],good:"Būtent. Šaltinis ir nepriklausomas patvirtinimas yra patikrinami požymiai.",bad:"Dizainas ir teksto kiekis neįrodo tikrumo. Tikrink šaltinį ir oficialų kanalą."},
+        {type:"choice",prompt:"Koks saugiausias pirmas veiksmas gavus tokį pranešimą?",options:["Atidaryti priedą, bet nieko jame nespausti.","Neatidaryti priedo ir atskirai per žinomą adresą patikrinti oficialią paskyrą / mokyklos kanalą.","Persiųsti priedą draugui, kad jis patikrintų."],correct:1,good:"Teisingai. Patikrą atliekame nepriklausomai nuo įtartino laiško.",bad:"Saugus veiksmas neturėtų nei atidaryti galimos grėsmės, nei jos platinti."},
+        {type:"order",prompt:"Sudėliok saugaus patikrinimo veiksmus tinkama tvarka.",items:["Tik tada spręsti, ar priedą apskritai reikia atidaryti","Nespausti priedo ar nuorodos","Atskirai atsidaryti oficialų mokyklos / paskyros kanalą","Palyginti, ar ten yra toks pats perspėjimas"],correct:[1,2,3,0],good:"Tvarka saugi: sustoji, tikrini nepriklausomai ir tik tada priimi sprendimą.",bad:"Pirmas žingsnis turi sumažinti riziką. Priedo neatidarome prieš patikrinimą."}
+      ]
+    },
+    {
+      id:"comms",label:"SEKTORIUS 02",name:"POKALBIŲ ARCHYVAS",enemy:"AIDŲ TARPININKAS",enemyTag:"NEPATIKRINTAS PASAKOJIMAS",theme:"vault",
+      objective:"Atskirk, ką screenshotas tikrai parodo, nuo to, ką žmonės tik teigia.",
+      cut:"Pokalbio kontekstas atkurtas. Žinutė įrodo, kad teiginys buvo parašytas, bet ne tai, kad jo turinys yra tiesa.",
+      challenges:[
+        {type:"choice",prompt:"Ką šis pokalbio screenshotas leidžia teigti patikimiausiai?",evidence:["15:01 Ona: „man atrodo čia tikras laiškas“","16:57 Herkus: „bet adresas gmail“","20:28 Ariana: „girdėjau, kad kažkam jau užblokavo paskyrą“"],options:["Kad kažkam tikrai buvo užblokuota paskyra.","Kad Ariana 20:28 parašė tokį teiginį.","Kad laiškas tikrai yra mokyklos."],correct:1,good:"Teisingai. Screenshotas patvirtina matomą žinutę, bet ne automatiškai jos turinio teisingumą.",bad:"Atskirk tai, ką tiesiogiai matai ekrane, nuo to, ką žmonės pasakoja."},
+        {type:"classify",statement:"Ekrane matoma, kad 16:57 Herkus parašė žinutę apie Gmail adresą.",prompt:"Pagal pateiktą screenshotą šis sakinys yra...",correct:"FAKTAS",good:"Taip. Pats žinutės egzistavimas ir matomas laikas yra tiesiogiai užfiksuoti vaizde.",bad:"Klausimas ne apie tai, ar Herkaus išvada teisinga, o ar matome, kad tokia žinutė buvo parašyta."},
+        {type:"classify",statement:"Kadangi Ariana girdėjo apie užblokuotą paskyrą, kažkam ji tikrai buvo užblokuota.",prompt:"Šis sakinys yra...",correct:"PRIELAIDA",good:"Teisingai. Tai išvada, kurios vien žmogaus pasakojimas nepatvirtina.",bad:"„Girdėjau“ yra teiginys. Reikia papildomo įrodymo, kad įvykis iš tikrųjų nutiko."},
+        {type:"multi",prompt:"Pasirink TRIS dalykus, kurie padėtų geriau įvertinti pokalbio screenshoto patikimumą.",options:["Ar matomas visas pokalbio kontekstas","Ar galima patikrinti originalų pokalbį","Ar matomi laikas ir paskyros / autoriaus duomenys","Ar naudojami gražūs emoji","Kokia telefono ekrano spalva"],correct:[0,1,2],good:"Puiku. Kontekstas, originalas ir autoriaus / laiko duomenys padeda tikrinti įrodymo kilmę.",bad:"Rinkis informaciją, kuri padeda patikrinti kilmę ir kontekstą, o ne dekoratyvias detales."},
+        {type:"choice",prompt:"Herkus pastebėjo, kad laiško adresas naudoja Gmail. Koks tyrėjo veiksmas tiksliausias?",options:["Iškart paskelbti laišką netikru.","Laikyti tai rizikos požymiu ir patikrinti, kokius adresus iš tikrųjų naudoja mokykla.","Ignoruoti, nes žmonių žinutės niekada nenaudingos."],correct:1,good:"Teisingai. Požymis kelia klausimą, o nepriklausoma patikra padeda jį atsakyti.",bad:"Vienas požymis dar nėra galutinė išvada. Jį reikia patikrinti."}
+      ]
+    },
+    {
+      id:"metadata",label:"SEKTORIUS 03",name:"METADUOMENŲ LABORATORIJA",enemy:"DUOMENŲ SARGAS",enemyTag:"PASLĖPTA FAILO KILMĖ",theme:"archive",
+      objective:"Išanalizuok failo savybes ir versijų istoriją. Pasakyk tik tai, ką jos iš tikrųjų rodo.",
+      cut:"Failo kilmė tapo aiškesnė. Metaduomenys ir versijų istorija suteikia patikrinamą kontekstą, tačiau ir jie neatsako į kiekvieną klausimą.",
+      challenges:[
+        {type:"choice",prompt:"Laiške priedas rodomas kaip „Patvirtinimas.pdf“, bet failo Properties lange Type nurodyta „Shortcut“. Kokia išvada tiksliausia?",evidence:["Rodomas pavadinimas: Patvirtinimas.pdf","Properties → Type: Shortcut","Vieta: C:\\Users\\Public\\Desktop"],options:["Failas nebūtinai yra toks, kokį bandė parodyti laiškas.","Visi PDF failai iš tikrųjų yra Shortcut.","Tai įrodo, kas sukūrė failą."],correct:0,good:"Teisingai. Failo tipas yra svarbus metaduomuo, o vien matomas pavadinimas gali klaidinti.",bad:"Palygink rodomą pavadinimą su technine failo tipo informacija."},
+        {type:"choice",prompt:"Kas geriausiai apibūdina metaduomenis?",options:["Duomenys apie kitus duomenis, pvz., failo tipą, dydį, vietą ar datas.","Tik failo viduje parašytas tekstas.","Slapta informacija, kuri visada pasako kaltininką."],correct:0,good:"Taip. Metaduomenys aprašo failą ar kitą skaitmeninį objektą.",bad:"Metaduomenys nėra tik turinys ir jie ne visada atsako, kas atliko veiksmą."},
+        {type:"multi",prompt:"Pasirink KETURIS pavyzdžius, kurie šiame Properties lange yra metaduomenys.",options:["Failo tipas","Failo vieta","Failo dydis","Sukūrimo / modifikavimo data","Mygtuko OK spalva"],correct:[0,1,2,3],good:"Teisingai. Šie laukai aprašo failą ir padeda jį tirti.",bad:"Metaduomenimis laikome informaciją apie failą, o ne sąsajos dekoracijas."},
+        {type:"classify",statement:"Kadangi „Date created“ rodo 19:51, žinome, kuris žmogus tuo metu sukūrė failą.",prompt:"Šis sakinys yra...",correct:"PRIELAIDA",good:"Teisingai. Data parodo laiką, bet pati savaime neįrodo fizinio autoriaus tapatybės.",bad:"Vienas laiko laukas nepasako, kas fiziškai atliko veiksmą."},
+        {type:"choice",prompt:"Previous Versions lange parašyta „There are no previous versions available“. Ką galima teigti tiksliai?",options:["Failas niekada nebuvo redaguotas.","Šiame lange šiuo metu nėra prieinamų ankstesnių versijų.","Failas tikrai saugus."],correct:1,good:"Būtent. Duomenų nebuvimas šiame lange nėra įrodymas, kad failas niekada nesikeitė.",bad:"Formuluok tik tai, ką langas tikrai rodo. Nepridėk platesnės išvados be papildomų duomenų."}
+      ]
+    },
+    {
+      id:"core",label:"SEKTORIUS 04",name:"ĮRODYMŲ BRANDUOLYS",enemy:"FABRIKATORIUS",enemyTag:"GALUTINIS PRIEŠAS // KLAIDINANTI IŠVADA",theme:"core",
+      objective:"Sujunk visus įrodymus. Pasirink išvadą, kuri yra pakankamai tvirta, bet neperžengia duomenų.",
+      cut:"",
+      challenges:[
+        {type:"choice",prompt:"Kuris teiginys šiuo metu geriausiai pagrįstas visais surinktais įrodymais?",options:["Oficialiai atrodantis laiškas turi kelis nepatikimumo požymius, todėl jo šaltinį reikia patikrinti prieš atliekant veiksmus.","Tiksliai žinome, kas sukūrė priedą ir išsiuntė laišką.","Laiškas tikras, nes jame naudojamas oficialus tonas."],correct:0,good:"Teisingai. Tai išvada, kuri remiasi turimais požymiais ir neapsimeta žinanti daugiau.",bad:"Galutinė išvada turi paaiškinti įrodymus, bet neperžengti jų ribų."},
+        {type:"choice",prompt:"Kurį įrodymą pirmiausia naudotum tikrindamas teiginį „prisegtas failas iš tikrųjų yra PDF“?",options:["Pokalbio žinutę.","Failo Properties informaciją apie Type.","Žmogaus nuomonę, kad failas atrodo kaip PDF."],correct:1,good:"Taip. Geriausias įrodymas priklauso nuo konkretaus klausimo – failo tipui tikrinti tinka jo savybės.",bad:"Rinkis įrodymą, kuris tiesiogiai atsako į klausimą apie failo tipą."},
+        {type:"multi",prompt:"Pasirink TRIS išvadas, kurias šiuo metu galime pagrįsti.",options:["Laiškas turi kelis rizikos požymius","Pokalbio screenshotas įrodo, kad konkrečios žinutės buvo parašytos","Failo savybės rodo neatitikimą tarp rodomo PDF pavadinimo ir Shortcut tipo","Tiksliai žinome konkretų kaltininką","Ankstesnių versijų nebuvimas įrodo, kad failas niekada nekeistas"],correct:[0,1,2],good:"Puiku. Visos trys išvados tiesiogiai remiasi matomais įrodymais.",bad:"Atskirai įvertink kiekvieną teiginį: ar jis tiesiogiai matomas, ar reikalauja papildomo spėjimo?"},
+        {type:"order",prompt:"Sudėliok profesionalią reakciją į tokią situaciją.",items:["Pranešti atsakingam žmogui ir išsaugoti reikalingus įrodymus","Neatidaryti priedo ir nespausti įtartinų nuorodų","Per oficialų kanalą patikrinti, ar pranešimas tikras","Pagal patikros rezultatą imtis tolesnių veiksmų"],correct:[1,2,0,3],good:"Teisingai. Pirmiausia sustabdome riziką, tada tikriname, dokumentuojame ir veikiame pagal faktus.",bad:"Pirmi veiksmai turi sumažinti riziką ir suteikti patikimos informacijos, o ne skubėti prie galutinės išvados."},
+        {type:"choice",prompt:"Kokia profesionaliausia galutinė Kiberagento išvada?",options:["Žinome viską ir galime tiksliai įvardyti kaltą asmenį.","Pranešimas ir priedas turi kelis nepatikimumo požymius. Jų nereikėtų atidaryti ar vykdyti nurodymų, kol šaltinis nepatikrintas; turimų duomenų nepakanka patikimai nustatyti konkretų kaltininką.","Reikia atidaryti priedą, nes tik taip sužinosime tiesą."],correct:1,good:"Byla uždaryta. Tiksli išvada remiasi įrodymais ir aiškiai pasako, ko dar nežinome.",bad:"Profesionali išvada neturi nei ignoruoti rizikos, nei apsimesti turinti įrodymų, kurių nėra."}
+      ]
+    }
+  ]
+};
