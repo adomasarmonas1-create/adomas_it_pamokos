@@ -1,182 +1,131 @@
 <!doctype html>
 <html lang="lt">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-  <meta name="theme-color" content="#05070a">
-  <title>KIBERAGENTAI // L01 // Skaitmeninė kriminalistika</title>
-  <link rel="stylesheet" href="./styles.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#070b12">
+<title>KIBERAGENTAI – 1 lygis: Skaitmeninė kriminalistika</title>
+<style>
+:root{--bg:#070b12;--panel:#0d1520;--panel2:#101d2a;--line:#29475d;--text:#e9f7ff;--muted:#8fb0c2;--accent:#66f4ff;--green:#9cff6e;--danger:#ff5e6c;--violet:#9a7cff}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:radial-gradient(circle at 50% -20%,#1b3447 0,#071019 34%,#05080d 72%);color:var(--text);font-family:ui-monospace,SFMono-Regular,Consolas,Monaco,monospace}
+body{overflow-x:hidden}.scanline{position:fixed;inset:0;pointer-events:none;background:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px);background-size:100% 4px;mix-blend-mode:screen;opacity:.25;z-index:99}
+.topbar{position:sticky;top:0;z-index:20;background:rgba(5,8,13,.9);backdrop-filter:blur(10px);border-bottom:1px solid #173040;padding:10px 0;margin-bottom:16px}
+.topinner{max-width:1100px;margin:auto;padding:0 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}.brand{font-weight:900;letter-spacing:.12em;color:var(--accent)}
+.case{color:#9db3bf;font-size:13px;flex:1;min-width:220px}.hearts{font-size:20px;letter-spacing:4px;white-space:nowrap}.counter{font-size:13px;border:1px solid #2b596c;border-radius:999px;padding:6px 10px;color:#b7eaff}
+.nav{display:flex;gap:8px}.nav a{color:#b7eaff;text-decoration:none;border:1px solid #2b596c;border-radius:999px;padding:6px 10px;font-size:12px}.nav a:hover{border-color:var(--accent)}
+#app{max-width:1100px;margin:0 auto;padding:18px 18px 70px}.screen{display:none}.screen.on{display:block}.transition{min-height:72vh;display:grid;place-items:center;text-align:center}
+.kicker{font-size:12px;color:var(--accent);letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px}.intro h1{font-size:clamp(38px,7vw,76px);margin:8px 0 14px;line-height:.95}.intro p{max-width:760px;line-height:1.65;color:#a9c5d2}.mission{font-size:21px!important;font-weight:900;color:#e9f7ff!important}
+.bigbtn,.choice,.smallbtn{font:inherit;border:1px solid #2e7184;background:linear-gradient(180deg,#102735,#0a1821);color:var(--text);border-radius:12px;cursor:pointer;transition:.18s}.bigbtn{padding:15px 24px;margin-top:20px;font-weight:900;letter-spacing:.08em}.bigbtn:hover,.choice:hover,.smallbtn:hover{transform:translateY(-1px);border-color:var(--accent);box-shadow:0 0 0 1px #66f4ff33,0 0 25px #66f4ff18}.smallbtn{padding:11px 16px;font-weight:800}.bigbtn:disabled,.smallbtn:disabled{opacity:.45;cursor:not-allowed}
+.card{background:linear-gradient(180deg,#0c1620,#091119);border:1px solid #1d3a4b;border-radius:18px;padding:20px;box-shadow:0 20px 80px #0008}.roomhead{display:flex;gap:12px;align-items:center;margin-bottom:12px}.roomno{display:grid;place-items:center;width:42px;height:42px;border-radius:11px;background:#102637;border:1px solid #295d70;color:var(--accent);font-weight:900}.roomtitle{font-size:clamp(22px,4vw,36px);font-weight:900}.roommeta{font-size:12px;color:#7ea1b4;margin-top:3px}
+.enemywrap{display:grid;grid-template-columns:260px 1fr;gap:18px;align-items:stretch}.enemy{min-height:290px;border:1px solid #254e60;border-radius:18px;background:radial-gradient(circle at 50% 30%,#1c5263 0 8%,transparent 9%),linear-gradient(140deg,#102836,#071019 55%,#0b1924);position:relative;overflow:hidden;display:grid;place-items:center}.enemy:before,.enemy:after{content:"";position:absolute;border:1px solid #2f7186;border-radius:50%;width:190px;height:190px;opacity:.5}.enemy:after{width:130px;height:130px;animation:pulse 1.9s infinite}@keyframes pulse{50%{transform:scale(1.08);opacity:.9}}
+.enemybot{font-size:86px;filter:drop-shadow(0 0 16px #66f4ff55)}.enemyname{position:absolute;bottom:14px;left:14px;right:14px;text-align:center;font-size:12px;letter-spacing:.1em;color:#96dbe6}.enemyhp{position:absolute;top:14px;left:14px;right:14px;height:8px;background:#071018;border:1px solid #274d5f;border-radius:99px;overflow:hidden}.enemyhp>i{display:block;height:100%;background:linear-gradient(90deg,#53ecff,#9cff6e);transition:.25s}
+.evidence{border:1px solid #203b4b;background:#0a141d;border-radius:16px;padding:16px;min-height:290px}.evidence h3{margin:0 0 12px;color:#a6d8ea}.mail,.chat,.props,.versions{background:#f3f4f6;color:#20242a;border-radius:9px;padding:14px;font-family:Arial,sans-serif}.mail .to,.mail .subject{font-size:13px;color:#48505a;margin-bottom:7px}.mail .subject{font-weight:800;color:#24282d}.mail .alert{border-left:4px solid #d33;padding-left:10px}.attachment{display:inline-flex;align-items:center;gap:8px;margin-top:10px;background:#fff;border:1px solid #ddd;padding:8px 10px;border-radius:8px}
+.chat{background:#202124;color:#f2f2f2}.chat .msg{background:#2b2d31;margin:10px 0;padding:10px;border-radius:10px}.chat .who{font-weight:800;font-size:12px;color:#a9c7ff}.chat .time{font-size:11px;color:#a0a0a0;margin-left:6px}
+.props{padding:0;overflow:hidden}.winbar{background:#e9edf2;padding:8px 10px;font-size:12px;border-bottom:1px solid #bcc6d0}.tabs{display:flex;gap:2px;background:#f8f9fb;border-bottom:1px solid #c9d1d9;padding:7px;flex-wrap:wrap}.tab{padding:5px 9px;border:1px solid #c7ced5;background:#fff;font-size:11px}.proptable{padding:12px}.prow{display:grid;grid-template-columns:130px 1fr;gap:12px;padding:6px;border-bottom:1px solid #e3e6ea;font-size:12px}.versions{min-height:210px}.versions .empty{margin:34px 0;padding:30px;border:1px solid #bbc4cc;text-align:center;color:#555}
+.questionbox{margin-top:16px;border-top:1px solid #1c3747;padding-top:16px}.qnum{font-size:12px;color:#6e95a8;margin-bottom:8px}.qtext{font-size:20px;line-height:1.35;font-weight:800;margin-bottom:13px}.choices{display:grid;gap:9px}.choice{text-align:left;padding:12px 14px}.choice.good{border-color:#65d786;background:#102519}.choice.bad{border-color:#d85b69;background:#2a1015}.feedback{min-height:56px;margin-top:13px;padding:12px 14px;border-radius:10px;background:#071019;border:1px solid #1c3544;color:#b8d4df}.feedback.good{border-color:#3f7e56;color:#bdf8c9}.feedback.bad{border-color:#723946;color:#ffc2c8}.nextrow{display:flex;justify-content:flex-end;margin-top:13px}
+.door{font-size:100px;animation:glitch .8s steps(2,end) infinite}@keyframes glitch{0%,100%{transform:translateX(0)}25%{transform:translateX(2px)}50%{transform:translateX(-2px)}}.echo{border-color:#6b55a2;background:linear-gradient(180deg,#171227,#0b0b16)}.echo .kicker{color:#c4adff}.boss .enemy{border-color:#6d4f8f;background:radial-gradient(circle at 50% 25%,#5e245d 0 10%,transparent 11%),linear-gradient(145deg,#2b1539,#0c0c17 60%,#170d1c)}.summary{max-width:780px;margin:40px auto;text-align:center}.summary h1{font-size:48px}.badge{display:inline-block;padding:8px 12px;border:1px solid #2f7186;border-radius:999px;color:#bcefff;margin:5px}.tip{font-size:13px;color:#88a8b9;margin-top:18px}
+.flash{animation:redflash .45s}@keyframes redflash{0%{box-shadow:inset 0 0 0 9999px #ff001800}30%{box-shadow:inset 0 0 0 9999px #ff00182b}100%{box-shadow:inset 0 0 0 9999px #ff001800}}
+@media(max-width:760px){.enemywrap{grid-template-columns:1fr}.enemy{min-height:200px}.case{order:4;width:100%}.nav{width:100%}.prow{grid-template-columns:100px 1fr}}
+</style>
 </head>
 <body>
-<div id="crt">
-  <div class="scanlines"></div>
-  <div class="vignette"></div>
-  <nav class="global-nav">
-    <a href="../../../">⌂ PAGRINDINIS</a>
-    <a href="../">← BYLŲ ARCHYVAS</a>
-  </nav>
+<div class="scanline"></div>
+<div class="topbar"><div class="topinner">
+  <div class="brand">KIBERAGENTAI</div>
+  <div class="case" id="caseLabel">6 KLASĖ · 1 LYGIS · SKAITMENINĖ KRIMINALISTIKA</div>
+  <div class="hearts" id="hearts">❤️❤️❤️</div>
+  <div class="counter" id="evcount">Įrodymai 0/4</div>
+  <div class="nav"><a href="../">← Bylų archyvas</a><a href="../../../">⌂ Pagrindinis</a></div>
+</div></div>
 
-  <main id="app">
-    <section class="screen active" id="screenBoot">
-      <div class="boot-box">
-        <div class="boot-logo">KIBER<span>AGENTAI</span></div>
-        <div class="boot-sub">KIBER TYRIMŲ SKYRIUS // 199X ARCHYVO VERSIJA</div>
-        <pre id="bootText">SISTEMOS BRANDUOLYS 6.04 .... GERAI
-ĮRODYMŲ RODYKLĖ ........ PARUOŠTA
-VIETINĖ SESIJA ......... PRIVATI
-AGENTŲ DUOMENYS ......... 6 ĮRAŠAI
+<div id="app">
+<section id="intro" class="screen on">
+  <div class="transition intro"><div>
+    <div class="kicker">KIBERAGENTŲ CENTRAS // BYLA 001</div>
+    <h1>NETIKRAS PERSPĖJIMAS</h1>
+    <p>Gautas įtartinas oficialus pranešimas. Prie laiško pridėtas failas. Keli žmonės teigia žinantys, kas nutiko, tačiau jų pasakojimai nesutampa.</p>
+    <p class="mission">Tavo užduotis – ne spėti, o nustatyti, ką iš tikrųjų galima įrodyti.</p>
+    <button class="bigbtn" onclick="startGame()">[ PRADĖTI TYRIMĄ ]</button>
+  </div></div>
+</section>
 
-ĮSPĖJIMAS: BYLOJE 6-L01 APTIKTAS ĮTARTINAS PRANEŠIMAS.
-REIKALINGAS AGENTO PATVIRTINIMAS.</pre>
-        <button class="pixel-btn" id="bootContinue">[ PRADĖTI TYRIMĄ ]</button>
-        <div class="boot-click-hint">PELĖ / LIETIMAS · KLAVIATŪRA NEREIKALINGA</div>
-      </div>
-    </section>
+<section id="room" class="screen"><div id="roomCard" class="card"></div></section>
 
-    <section class="screen" id="screenAgents">
-      <header class="retro-head">
-        <div><b>KIBERAGENTAI</b><span> // AGENTŲ TERMINALAS</span></div>
-        <div class="blink">● PRISIJUNGTA</div>
-      </header>
-      <div class="agent-intro">
-        <div class="kicker">NAUJAS TYRIMAS</div>
-        <h1>PASIRINK AGENTĄ</h1>
-        <p>Portretas bus rodomas tavo byloje. Tyrimą matysi pirmuoju asmeniu.</p>
-      </div>
-      <div class="agent-grid" id="agentGrid"></div>
-      <div class="bottom-command">
-        <div id="agentHint">Pasirink vieną agentą.</div>
-        <button class="pixel-btn" id="agentContinue" disabled>[ PATVIRTINTI AGENTĄ ]</button>
-      </div>
-    </section>
+<section id="between" class="screen"><div class="transition"><div>
+  <div class="door">⬡</div><div class="kicker" id="betweenKicker">ĮRODYMAS GAUTAS</div>
+  <h1 id="betweenTitle">DURYS ATRAKINTOS</h1><p id="betweenText" style="color:#9db7c4;max-width:640px"></p>
+  <button class="bigbtn" onclick="continueFromBetween()">TĘSTI →</button>
+</div></div></section>
 
-    <section class="screen" id="screenBriefing">
-      <div class="brief-layout">
-        <aside class="brief-agent">
-          <canvas id="briefPortrait" width="64" height="80"></canvas>
-          <div id="briefAgentName"></div>
-          <small>6 KLASĖ // LYGIS 01</small>
-        </aside>
-        <article class="brief-file">
-          <div class="stamp">SLAPTA</div>
-          <div class="kicker">BYLA 6-L01 // NETIKRAS PERSPĖJIMAS</div>
-          <h1>SKAITMENINĖ KRIMINALISTIKA</h1>
-          <div class="typewriter" id="briefCopy"></div>
-          <div class="brief-evidence">
-            <span>📨 LAIŠKAS</span><span>💬 POKALBIS</span><span>🧬 METADUOMENYS</span><span>⏳ VERSIJOS</span>
-          </div>
-          <button class="pixel-btn danger" id="enterCase">[ ATIDARYTI BYLĄ ]</button>
-        </article>
-      </div>
-    </section>
-
-    <section class="screen" id="screenGame">
-      <header class="game-hud">
-        <div class="hud-agent">
-          <canvas id="hudPortrait" width="40" height="48"></canvas>
-          <div><b id="hudAgentName">AGENTAS</b><small id="hudCase">BYLA 6-L01</small></div>
-        </div>
-        <div class="hud-center">
-          <span id="roomLabel">SEKTORIUS 01</span>
-          <strong id="roomName">SIGNALO VARTAI</strong>
-        </div>
-        <div class="hud-stats">
-          <div>GYVYBĖS <span id="hpHud">♥♥♥</span></div>
-          <div>PĖDSAKAI <span id="traceHud">000</span></div>
-        </div>
-      </header>
-
-      <section class="viewport-shell" id="viewportShell">
-        <canvas id="scene" width="320" height="180"></canvas>
-        <div class="scene-noise"></div>
-        <div class="damage-flash" id="damageFlash"></div>
-        <div class="hit-flash" id="hitFlash"></div>
-        <div class="enemy-card">
-          <span id="enemyTag">GRĖSMĖ</span>
-          <b id="enemyName">SIGNALO SARGAS</b>
-          <div class="enemy-hp"><i id="enemyHpBar"></i></div>
-        </div>
-        <div class="objective" id="objectiveText">Patikrink įrodymus ir neperženk to, ką jie leidžia teigti.</div>
-        <div class="room-reveal hidden" id="roomReveal">
-          <span id="revealSector">SEKTORIUS 01</span>
-          <strong id="revealRoom">PAŠTO VARTAI</strong>
-          <small id="revealEnemy">GRĖSMĖ: LAIŠKŲ ŠMĖKLA</small>
-        </div>
-      </section>
-
-      <section class="dialogue">
-        <div class="dialogue-top">
-          <span id="questionCode">K01</span>
-          <span id="questionType">ANALIZĖ</span>
-        </div>
-
-        <div class="question-focus">
-          <span class="question-label">TYRIMO KLAUSIMAS</span>
-          <p id="promptText"></p>
-        </div>
-
-        <div class="dialogue-body">
-          <div class="prompt-col">
-            <div class="evidence-title">TURIMI ĮRODYMAI</div>
-            <div class="evidence-strip" id="evidenceStrip"></div>
-          </div>
-          <div class="answer-col">
-            <div id="answerArea"></div>
-            <div class="feedback hidden" id="feedbackBox"></div>
-          </div>
-        </div>
-        <div class="dialogue-actions">
-          <span id="progressText">1 / 5</span>
-          <button class="pixel-btn hidden" id="nextQuestion">[ TĘSTI ]</button>
-        </div>
-      </section>
-    </section>
-
-    <section class="screen" id="screenCutscene">
-      <div class="cutscene-box">
-        <div class="cut-glitch" id="cutTitle">SEKTORIUS IŠVALYTAS</div>
-        <div class="pixel-line"></div>
-        <p id="cutText"></p>
-        <button class="pixel-btn" id="cutContinue">[ LEISTIS GILIAU ]</button>
-      </div>
-    </section>
-
-    <section class="screen" id="screenGameOver">
-      <div class="end-box fail">
-        <div class="huge">RYŠYS NUTRŪKO</div>
-        <h1>AGENTAS ATJUNGTAS</h1>
-        <p>Šiame sektoriuje padarei per daug nepagrįstų sprendimų. Byla liko atvira.</p>
-        <button class="pixel-btn danger" id="retryRoom">[ KARTOTI SEKTORIŲ ]</button>
-      </div>
-    </section>
-
-    <section class="screen" id="screenVictory">
-      <div class="victory-wrap">
-        <div class="victory-top">
-          <canvas id="victoryPortrait" width="64" height="80"></canvas>
-          <div><div class="kicker">BYLA 6-L01 // UŽDARYTA</div><h1>BYLA UŽDARYTA</h1><p id="victoryAgent"></p></div>
-        </div>
-        <div class="report-grid">
-          <div class="report-card"><small>TYRIMO TIKSLUMAS</small><strong id="accuracyStat">100%</strong></div>
-          <div class="report-card"><small>PĖDSAKŲ TAŠKAI</small><strong id="scoreStat">0000</strong></div>
-          <div class="report-card"><small>KLAIDINGOS IŠVADOS</small><strong id="mistakeStat">0</strong></div>
-          <div class="report-card"><small>REITINGAS</small><strong id="rankStat">S</strong></div>
-        </div>
-        <div class="final-report">
-          <h2>GALUTINĖ INCIDENTO IŠVADA</h2>
-          <p>Laiškas turi kelis nepatikimumo požymius, o failo savybės nesutampa su tuo, kaip priedas pateiktas laiške. Pokalbio žinutės suteikia kontekstą, bet neįrodo jų turinio teisingumo. Turimų įrodymų pakanka laikyti pranešimą įtartinu, tačiau nepakanka patikimai nustatyti konkretų kaltininką.</p>
-          <ol><li>Neatidaryti priedo ir nespausti įtartinų nuorodų.</li><li>Patikrinti pranešimą per oficialų, nepriklausomai atidarytą kanalą.</li><li>Išsaugoti tyrimui reikalingus įrodymus ir pranešti atsakingam žmogui.</li></ol>
-        </div>
-        <div class="finish-actions">
-          <a class="pixel-btn secondary" href="../">[ BYLŲ ARCHYVAS ]</a>
-          <button class="pixel-btn" id="replayGame">[ KARTOTI BYLĄ ]</button>
-        </div>
-      </div>
-    </section>
-  </main>
+<section id="done" class="screen"><div class="summary card">
+  <div class="kicker">BYLA 001 UŽDARYTA</div><h1 id="doneTitle">BYLA IŠSPRĘSTA</h1>
+  <p id="doneText" style="font-size:18px;line-height:1.6;color:#a9c5d2"></p>
+  <div><span class="badge" id="scoreBadge"></span><span class="badge" id="echoBadge"></span></div>
+  <p class="tip">Galutinė taisyklė: daryk tik tokią išvadą, kokią leidžia turimi įrodymai.</p>
+  <a class="bigbtn" style="display:inline-block;text-decoration:none" href="../">← GRĮŽTI Į BYLŲ ARCHYVĄ</a>
+</div></section>
 </div>
 
-<script src="./case-data.js"></script>
-<script src="./game.js"></script>
+<script>
+const rooms=[
+{title:"Įeinantis signalas",enemy:"SIGNALO SARGAS",icon:"🛰️",evidence:"ĮTARTINAS LAIŠKAS",kind:"mail",blurb:"Patikrink šaltinį, prašymą ir kontekstą. Oficialiai atrodantis laiškas dar nebūtinai yra oficialus.",qs:[
+{c:"source",q:"Kuris požymis labiausiai verčia suabejoti laiško patikimumu?",a:["Laiške yra pasisveikinimas.","Prašoma skubiai veikti ir naudojamas keistas kontaktinis adresas.","Laiškas turi priedą."],ok:1,fb:"Skuba ir neįprastas kontaktinis adresas yra požymiai, kuriuos verta tikrinti."},
+{c:"claim",q:"Laiške parašyta „jūsų paskyroje aptikta neleistina veikla“. Ar tai jau įrodytas faktas?",a:["Taip, nes taip parašyta laiške.","Ne. Tai laiško autoriaus teiginys, kurį reikia patikrinti.","Taip, nes laiškas atrodo oficialiai."],ok:1,fb:"Teiginys nėra tas pats, kas įrodymas."},
+{c:"source",q:"Ką saugiausia daryti su prisegtu failu?",a:["Iškart atidaryti.","Pirmiausia patikrinti laiško šaltinį ir tik tada spręsti dėl priedo.","Persiųsti draugui, kad jis patikrintų."],ok:1,fb:"Prieš atidarant priedą pirmiausia tikrinamas šaltinis."},
+{c:"source",q:"Ar logotipas ir oficialiai atrodantis dizainas įrodo, kad laiškas tikras?",a:["Taip.","Ne.","Tik jei naudojamas didelis logotipas."],ok:1,fb:"Išvaizdą galima nukopijuoti. Patikimumą lemia ne vien dizainas."}
+]},
+{title:"Pokalbių archyvas",enemy:"AIDŲ TARPININKAS",icon:"📡",evidence:"POKALBIO IŠRAŠAS",kind:"chat",blurb:"Tai, kad žmogus kažką parašė, patvirtina žinutės egzistavimą, bet ne būtinai jos turinio teisingumą.",qs:[
+{c:"claim",q:"Kuris teiginys yra patvirtintas pačiu pokalbio vaizdu?",a:["Kažkam tikrai užblokavo paskyrą.","Ariana parašė, kad apie tai girdėjo.","Laiškas tikrai yra mokyklos."],ok:1,fb:"Screenshotas patvirtina, kad žinutė parašyta, bet ne automatiškai jos turinio teisingumą."},
+{c:"claim",q:"„Aš girdėjau, kad kažkam jau užblokavo paskyrą.“ Kas tai?",a:["Patvirtintas faktas.","Žmogaus teiginys.","Failo metaduomuo."],ok:1,fb:"Tai žmogaus teiginys. Jam dar reikia patikimo pagrindimo."},
+{c:"source",q:"Herkus pastebėjo, kad adresas naudoja Gmail. Ką su šia informacija turėtume daryti?",a:["Laikyti tai požymiu ir patikrinti, kokius adresus iš tikrųjų naudoja mokykla.","Iškart paskelbti laišką netikru.","Ignoruoti."],ok:0,fb:"Vienas požymis gali kelti įtarimą, bet gerą išvadą reikia patikrinti."},
+{c:"evidence",q:"Ar screenshotas gali būti naudingas įrodymas?",a:["Ne, niekada.","Taip, bet reikia vertinti jo kilmę ir kontekstą.","Screenshotas visada įrodo viską, kas jame parašyta."],ok:1,fb:"Screenshotas gali būti naudingas, bet jo kilmė ir kontekstas svarbūs."}
+]},
+{title:"Metaduomenų laboratorija",enemy:"DUOMENŲ SARGAS",icon:"🧬",evidence:"FAILO METADUOMENYS",kind:"props",blurb:"Metaduomenys – duomenys apie duomenis. Jie padeda tikrinti, bet neatsako į visus klausimus.",qs:[
+{c:"meta",q:"Laiške failas atrodė kaip PDF, tačiau Properties lange Type rodo „Shortcut“. Ką tai reiškia?",a:["Failas nebūtinai yra toks, kokį bandė parodyti laiškas.","Visi PDF failai yra Shortcut.","Nieko svarbaus."],ok:0,fb:"Failo tipas yra svarbus metaduomuo. Pavadinimas gali klaidinti."},
+{c:"meta",q:"Kas yra metaduomenys?",a:["Duomenys apie failą ar kitus duomenis.","Tik failo viduje parašytas tekstas.","Slaptažodis."],ok:0,fb:"Metaduomenys aprašo kitus duomenis: tipą, laiką, vietą ir pan."},
+{c:"meta",q:"Kuri informacija šiame lange yra metaduomenys?",a:["Failo tipas, vieta, dydis ir datos.","Tik failo pavadinimo spalva.","Tik mygtukas OK."],ok:0,fb:"Tipas, vieta, dydis ir datos yra tipiniai failo metaduomenys."},
+{c:"limits",q:"Ar „Date created“ įrodo, kas sukūrė failą?",a:["Taip.","Ne. Ji nurodo laiką, bet ne automatiškai failo autorių.","Taip, jei failas mažas."],ok:1,fb:"Vienas metaduomuo atsako tik į konkretų klausimą. Sukūrimo data neįrodo autoriaus."}
+]},
+{title:"Versijų saugykla",enemy:"LAIKO ARCHYVARAS",icon:"⏳",evidence:"VERSIJŲ ISTORIJA",kind:"versions",blurb:"Duomenų nebuvimas nėra tas pats, kas įrodymas, kad nieko nebuvo.",qs:[
+{c:"limits",q:"Ką tiksliai galime teigti pagal šį ekraną?",a:["Failas niekada nebuvo keistas.","Šiame lange šiuo metu nėra prieinamų ankstesnių versijų.","Failą sukūrė vienas konkretus žmogus."],ok:1,fb:"Formuluok tik tai, ką ekranas iš tikrųjų parodo."},
+{c:"limits",q:"Kodėl negalime sakyti „failas tikrai niekada nebuvo redaguotas“?",a:["Nes duomenų nebuvimas šiame lange pats savaime to neįrodo.","Nes kompiuteriai nerodo datų.","Nes failai niekada nesikeičia."],ok:0,fb:"„Nėra ankstesnių versijų šiame lange“ ir „failas niekada nekeistas“ nėra tas pats teiginys."},
+{c:"evidence",q:"Ką Kiberagentas turėtų daryti, kai turimų įrodymų neužtenka?",a:["Pasirinkti labiausiai patinkančią versiją.","Ieškoti papildomų patikimų įrodymų.","Apkaltinti pirmą įtartiną žmogų."],ok:1,fb:"Kai įrodymų nepakanka, profesionalus sprendimas – ieškoti daugiau patikimų duomenų."}
+]},
+{title:"Bylos branduolys",enemy:"FABRIKATORIUS",icon:"👁️",evidence:null,kind:"boss",boss:true,blurb:"Naujos teorijos nebėra. Dabar sujunk visus surinktus įrodymus ir padaryk tik tiek išvadų, kiek leidžia duomenys.",qs:[
+{c:"evidence",q:"Kuris teiginys šiuo metu geriausiai pagrįstas įrodymais?",a:["Oficialiai atrodantis laiškas turi kelis požymius, dėl kurių jo patikimumą reikia tikrinti.","Tiksliai žinome, kas jį išsiuntė.","Laiškas tikras, nes jame yra logotipas."],ok:0,fb:"Turimi duomenys pagrindžia įtarimą ir būtinybę tikrinti, bet ne galutinį kaltinimą."},
+{c:"meta",q:"Kurį įrodymą naudotum tikrindamas teiginį „prisegtas failas iš tikrųjų yra PDF“?",a:["Pokalbio žinutę.","Failo Properties informaciją.","Žmogaus nuomonę."],ok:1,fb:"Geriausias įrodymas priklauso nuo konkretaus klausimo. Failo tipui tikrinti tinka jo savybės."},
+{c:"conclusion",q:"Kokia profesionaliausia Kiberagento išvada?",a:["Žinome viską ir galime tiksliai nustatyti kaltą asmenį.","Laiškas turi kelis nepatikimumo požymius, o failo informacija kelia papildomų abejonių. Jo nereikėtų atidaryti, kol šaltinis nepatikrintas.","Reikia atidaryti failą, kad išsiaiškintume."],ok:1,fb:"Gera išvada neperžengia to, ką leidžia turimi įrodymai."}
+]}
+];
+
+const echoBank={
+source:{q:"ECHO: Laiške naudojamas neįprastas adresas ir reikalaujama veikti skubiai. Ką pirmiausia darai?",a:["Tikrinu šaltinį per oficialų kanalą.","Spaudžiu priedą.","Persiunčiu visiems."],ok:0,fb:"Šaltinį tikriname nepriklausomai nuo paties laiško."},
+claim:{q:"ECHO: Mantas parašė: „Šitą failą tikrai sukūrė mokytojas.“ Kitų duomenų neturime. Ką turime?",a:["Faktą.","Teiginį.","Metaduomenis."],ok:1,fb:"Žmogaus pasakymas yra teiginys, kol neturime jį pagrindžiančių įrodymų."},
+evidence:{q:"ECHO: Vienas screenshotas prieštarauja failo informacijai. Koks geriausias kitas žingsnis?",a:["Ieškoti papildomo nepriklausomo įrodymo.","Pasirinkti screenshotą, nes jis gražesnis.","Spėti."],ok:0,fb:"Prieštaravimas reiškia, kad reikia daugiau patikros, ne daugiau spėjimų."},
+meta:{q:"ECHO: Kuris duomuo geriausiai padėtų patikrinti failo tipą?",a:["Failo Properties → Type.","Žmogaus nuomonė.","Ekrano fonas."],ok:0,fb:"Failo tipas yra metaduomuo ir tikrinamas failo savybėse."},
+limits:{q:"ECHO: Ekrane nematai ankstesnių versijų. Kuri formuluotė tiksliausia?",a:["Failas niekada nekeistas.","Šiame vaizde nematau ankstesnių versijų.","Failą tikrai sukūrė vienas žmogus."],ok:1,fb:"Tikslus agentas nepasako daugiau, nei leidžia įrodymai."},
+conclusion:{q:"ECHO: Ką darai, jei įrodymai leidžia tik įtarti, bet ne patvirtinti?",a:["Sakau, kad įtariu, ir tęsiu patikrą.","Paskelbiu kaltą.","Ignoruoju viską."],ok:0,fb:"Išvada turi atitikti įrodymų stiprumą."}
+};
+
+let state={room:0,q:0,hearts:3,evidence:0,echoQueue:[],echoCleared:0,assisted:false,totalCorrect:0,totalAnswered:0};
+function show(id){document.querySelectorAll(".screen").forEach(x=>x.classList.remove("on"));document.getElementById(id).classList.add("on")}
+function startGame(){state={room:0,q:0,hearts:3,evidence:0,echoQueue:[],echoCleared:0,assisted:false,totalCorrect:0,totalAnswered:0};updateHud();document.getElementById("caseLabel").textContent="BYLA 001 · NETIKRAS PERSPĖJIMAS";renderRoom();show("room")}
+function updateHud(){document.getElementById("hearts").textContent="❤️".repeat(state.hearts)+"🩶".repeat(3-state.hearts);document.getElementById("evcount").textContent="Įrodymai "+state.evidence+"/4"}
+function evidenceHTML(kind){
+if(kind==="mail")return '<div class="mail"><div class="to"><b>Kam:</b> mokinys@mokykla.lt</div><div class="subject">Tema: Jūsų paskyra bus užblokuota</div><div class="alert"><p>Sveiki,</p><p>jūsų mokyklos paskyroje aptikome neleistiną veiklą. Per <b>48 valandas</b> turite atidaryti prisegtą dokumentą ir patvirtinti savo duomenis.</p><p>To nepadarius paskyra bus išjungta.</p><p>Administracija<br><b>pagalba.mokykla@gmail.com</b></p></div><div class="attachment">📎 <b>Patvirtinimas.pdf</b></div></div>';
+if(kind==="chat")return '<div class="chat"><div class="msg"><span class="who">Ona</span><span class="time">15:01</span><br>man atrodo čia tikras laiškas, mokykla jau buvo kažką panašaus siuntus</div><div class="msg"><span class="who">Herkus</span><span class="time">16:57</span><br>bet adresas gmail, mūsų mokykla tokių nenaudoja</div><div class="msg"><span class="who">Ariana</span><span class="time">20:28</span><br>aš girdėjau, kad kažkam jau užblokavo paskyrą</div></div>';
+if(kind==="props")return '<div class="props"><div class="winbar">Patvirtinimas Properties</div><div class="tabs"><span class="tab">General</span><span class="tab">Details</span><span class="tab">Previous Versions</span></div><div class="proptable"><div class="prow"><b>Name</b><span>Patvirtinimas.lnk</span></div><div class="prow"><b>Type</b><span>Shortcut</span></div><div class="prow"><b>File location</b><span>C:\\Users\\Public\\Desktop</span></div><div class="prow"><b>Size</b><span>1.92 KB</span></div><div class="prow"><b>Date created</b><span>2026-09-27 19:51</span></div><div class="prow"><b>Date modified</b><span>2026-09-27 19:51</span></div></div></div>';
+if(kind==="versions")return '<div class="versions"><div class="winbar">Patvirtinimas Properties · Previous Versions</div><p>Previous versions come from File History or restore points.</p><div class="empty">There are no previous versions available.</div></div>';
+return '<div style="padding:12px"><h3 style="color:#e4bcff">SURINKTI ĮRODYMAI</h3><p>📧 Įtartinas laiškas</p><p>💬 Pokalbio išrašas</p><p>🧬 Failo metaduomenys</p><p>⏳ Versijų istorija</p><p style="margin-top:18px;color:#a9c5d2">Svarbu ne „kuris įrodymas apskritai geriausias“, o kuris geriausiai pagrindžia konkretų teiginį.</p></div>';
+}
+function renderRoom(){const r=rooms[state.room],q=r.qs[state.q],hp=Math.max(0,100-(state.q/r.qs.length)*100);const card=document.getElementById("roomCard");card.className="card "+(r.boss?"boss":"");card.innerHTML='<div class="roomhead"><div class="roomno">'+String(state.room+1).padStart(2,"0")+'</div><div><div class="roomtitle">'+r.title+'</div><div class="roommeta">'+(r.boss?"BOSS KAMBARYS":"KAMBARYS "+(state.room+1)+" / 5")+' · '+r.enemy+'</div></div></div><div class="enemywrap"><div class="enemy"><div class="enemyhp"><i style="width:'+hp+'%"></i></div><div class="enemybot">'+r.icon+'</div><div class="enemyname">'+r.enemy+'</div></div><div class="evidence"><h3>BYLOS MEDŽIAGA</h3>'+evidenceHTML(r.kind)+'<p style="color:#8db0c0;font-size:13px;line-height:1.5">'+r.blurb+'</p></div></div><div class="questionbox"><div class="qnum">KLAUSIMAS '+(state.q+1)+' / '+r.qs.length+'</div><div class="qtext">'+q.q+'</div><div class="choices">'+q.a.map((x,i)=>'<button class="choice" onclick="answer('+i+')">'+String.fromCharCode(65+i)+'. '+x+'</button>').join("")+'</div><div class="feedback" id="fb">Pasirink atsakymą.</div><div class="nextrow"><button class="smallbtn" id="next" onclick="nextQuestion()" disabled>KITAS →</button></div></div>';updateHud()}
+function answer(i){const q=rooms[state.room].qs[state.q],btns=[...document.querySelectorAll(".choice")];if(btns.some(b=>b.disabled))return;state.totalAnswered++;btns.forEach((b,idx)=>{b.disabled=true;if(idx===q.ok)b.classList.add("good")});const fb=document.getElementById("fb");if(i===q.ok){state.totalCorrect++;fb.className="feedback good";fb.textContent="✓ "+q.fb}else{btns[i].classList.add("bad");fb.className="feedback bad";fb.textContent="✕ "+q.fb;state.hearts=Math.max(0,state.hearts-1);if(!state.echoQueue.includes(q.c))state.echoQueue.push(q.c);document.body.classList.add("flash");setTimeout(()=>document.body.classList.remove("flash"),500);if(state.hearts===0){state.assisted=true;fb.textContent+=" · PAGALBOS PROTOKOLAS AKTYVUOTAS: žaidimą tęsi, bet sistema padės."}}updateHud();document.getElementById("next").disabled=false}
+function nextQuestion(){const r=rooms[state.room];if(state.q<r.qs.length-1){state.q++;renderRoom();return}if(r.evidence){state.evidence++;updateHud()}if(state.echoQueue.length&&state.room<rooms.length-1){showEcho();return}finishRoom()}
+function showEcho(){const concept=state.echoQueue.shift(),e=echoBank[concept];show("room");const card=document.getElementById("roomCard");card.className="card echo";card.innerHTML='<div class="kicker">ECHO // NEĮTVIRTINTA SĄVOKA</div><h1>ECHO KAMBARYS</h1><p style="color:#bba7e8">Ankstesnė klaida grįžta kitu pavidalu. Tai ne bausmė – tai antras bandymas.</p><div class="questionbox"><div class="qtext">'+e.q+'</div><div class="choices">'+e.a.map((x,i)=>'<button class="choice" onclick="answerEcho('+i+',\''+concept+'\')">'+String.fromCharCode(65+i)+'. '+x+'</button>').join("")+'</div><div class="feedback" id="fb">Pasirink atsakymą.</div><div class="nextrow"><button class="smallbtn" id="next" onclick="finishRoom()" disabled>TĘSTI →</button></div></div>'}
+function answerEcho(i,concept){const e=echoBank[concept],btns=[...document.querySelectorAll(".choice")];if(btns.some(b=>b.disabled))return;state.totalAnswered++;btns.forEach((b,idx)=>{b.disabled=true;if(idx===e.ok)b.classList.add("good")});const fb=document.getElementById("fb");if(i===e.ok){state.totalCorrect++;state.echoCleared++;fb.className="feedback good";fb.textContent="✓ ECHO IŠVALYTAS. "+e.fb}else{btns[i].classList.add("bad");fb.className="feedback bad";fb.textContent="✕ "+e.fb;state.hearts=Math.max(0,state.hearts-1);if(state.hearts===0)state.assisted=true}updateHud();document.getElementById("next").disabled=false}
+function finishRoom(){const r=rooms[state.room];if(state.room===rooms.length-1){finishGame();return}document.getElementById("betweenKicker").textContent=r.evidence?"ĮRODYMAS GAUTAS":"SEKTORIUS IŠVALYTAS";document.getElementById("betweenTitle").textContent=r.evidence?r.evidence:"DURYS ATRAKINTOS";document.getElementById("betweenText").textContent="Priešas neutralizuotas. Kitas kambarys atrakintas.";show("between")}
+function continueFromBetween(){state.room++;state.q=0;renderRoom();show("room")}
+function finishGame(){show("done");document.getElementById("doneTitle").textContent=state.assisted?"BYLA IŠSPRĘSTA SU PAGALBOS PROTOKOLU":"BYLA IŠSPRĘSTA SAVARANKIŠKAI";document.getElementById("doneText").textContent="Laiškas turi kelis nepatikimumo požymius, o failo informacija kelia papildomų abejonių. Jo nereikėtų atidaryti, kol šaltinis nepatikrintas. Turimi duomenys neleidžia patikimai nustatyti konkretaus kaltininko.";document.getElementById("scoreBadge").textContent="Teisingi atsakymai: "+state.totalCorrect+" / "+state.totalAnswered;document.getElementById("echoBadge").textContent="ECHO išvalyta: "+state.echoCleared}
+</script>
 </body>
 </html>
