@@ -8,8 +8,10 @@ window.NETVILA_LEVELS = {
   },
   "3": {
     title: "3 klasė",
-    goal: "Sudėtingesni algoritmai, debugging, duomenų dėsningumai ir saugi paskyra.",
-    levels: []
+    goal: "Sudėtingesni algoritmai, problemos skaidymas, kartojimas, sąlygos ir testavimas.",
+    levels: [
+      {id:"3-01",title:"Sudėtingesni algoritmai",subtitle:"Game Boy nuotykis: problemos skaidymas, kartojimas, JEI–TAI ir roboto maršrutai.",url:"../3-klase/netvila/01-sudetingesni-algoritmai/",status:"Veikia"}
+    ]
   },
   "4": {
     title: "4 klasė",
