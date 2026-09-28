@@ -283,7 +283,9 @@ var taskBank=[
     grid:{start:[3,3],goal:[0,0],walls:[[2,3],[2,2],[1,1]]},
     why:"Prieš vykdydami algoritmą galime jį mintyse patikrinti ir numatyti rezultatą."
   }
-];\n\nfunction makeWorld(seed){
+];
+
+function makeWorld(seed){
   var w=44,h=28,a=[],x,y,variant=(seed-1)%6;
   for(y=0;y<h;y++){a[y]=[];for(x=0;x<w;x++)a[y][x]=0}
 
@@ -426,8 +428,16 @@ function play(id){
   var base=levels[id-1];
   L={id:id,map:cloneMap(base.map)};
   if(id===1){
-    for(var cx=25;cx<=41;cx++){L.map[20][cx]=6;L.map[21][cx]=5;L.map[22][cx]=6}
+    // Rytinė dalis: siauras koridorius po vartų, todėl priešų apeiti negalima.
+    for(var cx=27;cx<=41;cx++){L.map[20][cx]=6;L.map[21][cx]=5;L.map[22][cx]=6}
+    L.map[21][26]=6;
     L.map[21][41]=6;
+    // Jungtis nuo vartų (14 eilutė) iki rytinio koridoriaus.
+    for(var cy=14;cy<=21;cy++){
+      L.map[cy][27]=5;
+      if(cy>14&&cy<21){L.map[cy][26]=6;L.map[cy][28]=6}
+    }
+    L.map[14][25]=5;L.map[14][26]=5;L.map[14][27]=5;
   }
   p={x:8*T,y:21*T,w:12,h:12,hp:3,key:false,dir:"up"};
   houses=housesForLevel(id);
