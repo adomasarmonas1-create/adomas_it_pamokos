@@ -18,7 +18,7 @@ window.IT_CURRICULUM = {
       {week:8,date:"10.19–10.23",title:"Saugi paskyra",status:"prototype",engineId:"3-01"}
     ],
     netvila:[
-      {week:5,date:"09.28–10.02",title:"Sudėtingesni algoritmai",status:"planned"},
+      {week:5,date:"09.28–10.02",title:"Sudėtingesni algoritmai",status:"prototype",url:"./01-sudetingesni-algoritmai/"},
       {week:6,date:"10.05–10.09",title:"Algoritmo klaidų medžiotojai",status:"planned"},
       {week:7,date:"10.12–10.16",title:"Duomenys ir dėsningumai",status:"planned"},
       {week:9,date:"11.09–11.13",title:"NETVILOS misija",status:"planned"},
