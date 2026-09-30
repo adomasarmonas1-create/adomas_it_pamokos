@@ -39,10 +39,10 @@ window.IT_CURRICULUM = {
   "5": {
     label:"5 klasė",
     kiberagentai:[
+      {week:4,date:"09.21–09.25",title:"Failai 2.0 – kas iš tikrųjų yra mano kompiuteryje?",status:"prototype",url:"./01-failai-2-0/"},
       {week:11,date:"11.23–11.27",title:"Kas čia iš tikrųjų nutiko?",status:"prototype",engineId:"5-01"}
     ],
     netvila:[
-      {week:4,date:"09.21–09.25",title:"Failai 2.0 – kas iš tikrųjų yra mano kompiuteryje?",status:"legacy",url:"../../netvila-5/"},
       {week:9,date:"11.09–11.13",title:"Duomenų laboratorija I – sutvarkyk duomenis",status:"planned"},
       {week:12,date:"11.30–12.04",title:"Nuo algoritmo iki programos",status:"planned"}
     ]
