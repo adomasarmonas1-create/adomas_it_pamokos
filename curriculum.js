@@ -19,7 +19,7 @@ window.IT_CURRICULUM = {
     ],
     netvila:[
       {week:5,date:"09.28–10.02",title:"Sudėtingesni algoritmai",status:"prototype",url:"./01-sudetingesni-algoritmai/"},
-      {week:6,date:"10.05–10.09",title:"Algoritmo klaidų medžiotojai",status:"planned"},
+      {week:6,date:"10.05–10.09",title:"Algoritmo klaidų medžiotojai",status:"prototype",url:"./02-algoritmo-klaidu-medziotojai/"},
       {week:7,date:"10.12–10.16",title:"Duomenys ir dėsningumai",status:"planned"},
       {week:9,date:"11.09–11.13",title:"NETVILOS misija",status:"planned"},
       {week:12,date:"11.30–12.04",title:"Kaip veikia skaitmeninis žaidimas?",status:"planned"}
