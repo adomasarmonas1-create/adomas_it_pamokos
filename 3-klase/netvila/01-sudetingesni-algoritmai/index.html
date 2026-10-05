@@ -412,15 +412,17 @@ function charButtons(){
 }
 function levelButtons(){
   levelsEl.innerHTML="";
-  var latest=1;
-  levels.forEach(function(o){
-    var b=document.createElement("button");
-    b.className="btn level";
-    b.disabled=!o.released;
-    b.innerHTML=(o.id<10?"0":"")+o.id+" LYGIS<br><span class=small>"+(o.released?o.title:"UŽRAKINTA")+"</span>"+(o.id===latest?'<span class="new">NEW</span>':"");
-    b.onclick=function(){play(o.id)};
-    levelsEl.appendChild(b);
-  });
+  var b1=document.createElement("button");
+  b1.className="btn level";
+  b1.innerHTML='01 LYGIS<br><span class="small">SUDĖTINGESNI ALGORITMAI · 09.28–10.02</span>';
+  b1.onclick=function(){play(1)};
+  levelsEl.appendChild(b1);
+
+  var b2=document.createElement("button");
+  b2.className="btn level";
+  b2.innerHTML='02 LYGIS<br><span class="small">ALGORITMO KLAIDŲ MEDŽIOTOJAI · 10.05–10.09</span><span class="new">NEW</span>';
+  b2.onclick=function(){location.href="../02-algoritmo-klaidu-medziotojai/"};
+  levelsEl.appendChild(b2);
 }
 function cloneMap(a){return a.map(function(r){return r.slice()})}
 
