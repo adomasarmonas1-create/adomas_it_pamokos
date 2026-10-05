@@ -327,12 +327,17 @@ function charButtons(){
 }
 function levelButtons(){
   levelsEl.innerHTML="";
-  var o=levels[1];
-  var b=document.createElement("button");
-  b.className="btn level";
-  b.innerHTML="02 LYGIS<br><span class=small>ALGORITMO KLAIDŲ MEDŽIOTOJAI · 10.05–10.09</span><span class=\"new\">NEW</span>";
-  b.onclick=function(){play(2)};
-  levelsEl.appendChild(b);
+  var b1=document.createElement("button");
+  b1.className="btn level";
+  b1.innerHTML='01 LYGIS<br><span class="small">SUDĖTINGESNI ALGORITMAI · 09.28–10.02</span>';
+  b1.onclick=function(){location.href="../01-sudetingesni-algoritmai/"};
+  levelsEl.appendChild(b1);
+
+  var b2=document.createElement("button");
+  b2.className="btn level";
+  b2.innerHTML='02 LYGIS<br><span class="small">ALGORITMO KLAIDŲ MEDŽIOTOJAI · 10.05–10.09</span><span class="new">NEW</span>';
+  b2.onclick=function(){play(2)};
+  levelsEl.appendChild(b2);
 }
 function cloneMap(a){return a.map(function(r){return r.slice()})}
 
