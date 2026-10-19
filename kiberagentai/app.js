@@ -7,6 +7,8 @@
   let xp = 0;
   let correctCount = 0;
   let locked = false;
+  let lives = 3;
+  let openedEvidence = 0;
 
   const catalogView = document.getElementById("catalogView");
   const gameView = document.getElementById("gameView");
@@ -21,6 +23,12 @@
   const stageHud = document.getElementById("stageHud");
   const xpHud = document.getElementById("xpHud");
   const progressBar = document.getElementById("progressBar");
+  const roomHud = document.getElementById("roomHud");
+  const livesHud = document.getElementById("livesHud");
+  const sceneViewport = document.getElementById("sceneViewport");
+  const evidenceTip = document.getElementById("evidenceTip");
+  const missionOverlay = document.getElementById("missionOverlay");
+  const missionOverlayButton = document.getElementById("missionOverlayButton");
   const caseKicker = document.getElementById("caseKicker");
   const caseTitle = document.getElementById("caseTitle");
   const caseBrief = document.getElementById("caseBrief");
@@ -29,6 +37,41 @@
   const choices = document.getElementById("choices");
   const feedback = document.getElementById("feedback");
   const nextBtn = document.getElementById("nextBtn");
+
+  function isMission() {
+    return Boolean(activeLevel && activeLevel.mode === "field-mission");
+  }
+
+  function updateLives() {
+    livesHud.textContent = "SKYDAI " + "♥".repeat(lives) + "♡".repeat(Math.max(0, 3 - lives));
+    livesHud.classList.toggle("critical", lives === 1);
+  }
+
+  function interlude(title, body, buttonText) {
+    document.getElementById("missionOverlayTitle").textContent = title;
+    document.getElementById("missionOverlayText").textContent = body;
+    missionOverlayButton.textContent = buttonText;
+    missionOverlay.classList.remove("hidden");
+    missionOverlayButton.focus();
+  }
+
+  function closeInterlude() {
+    missionOverlay.classList.add("hidden");
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+
+  missionOverlayButton.addEventListener("click", closeInterlude);
+
+  function updateEvidenceGate() {
+    if (!isMission()) return;
+    const total = activeLevel.stages[stageIndex].evidence.length;
+    const ready = openedEvidence >= total;
+    evidenceTip.textContent = ready
+      ? "✓ Įrodymai surinkti. Dabar pasirink ir pagrįsk sprendimą."
+      : "ATVERK ĮRODYMUS: " + openedEvidence + " / " + total + " · Spausk ant visų užuominų kortelių.";
+    evidenceTip.classList.toggle("ready", ready);
+    choices.querySelectorAll(".choice").forEach(button => { button.disabled = !ready; });
+  }
 
   function setUrl(grade, level) {
     const u = new URL(location.href);
@@ -96,6 +139,7 @@
     xp = 0;
     correctCount = 0;
     locked = false;
+    lives = isMission() ? (level.lives || 3) : 3;
     catalogView.classList.add("hidden");
     finishView.classList.add("hidden");
     gameView.classList.remove("hidden");
@@ -103,7 +147,11 @@
     caseId.textContent = activeGrade + " klasė · " + level.id + " · " + level.title;
     setUrl(activeGrade, level.id);
     renderStage();
-    window.scrollTo({top:0,behavior:"smooth"});
+    if (isMission()) {
+      interlude("OPERACIJA: UŽRAKINTA PASKYRA", activeLevel.intro || activeLevel.briefing, "Įeiti į pirmą kambarį →");
+    } else {
+      window.scrollTo({top:0,behavior:"smooth"});
+    }
   }
 
   function renderStage() {
@@ -115,12 +163,50 @@
     caseKicker.textContent = stage.kicker;
     caseTitle.textContent = stage.title;
     caseBrief.textContent = stage.brief;
+    openedEvidence = 0;
+    roomHud.classList.toggle("hidden", !isMission());
+    livesHud.classList.toggle("hidden", !isMission());
+    sceneViewport.classList.toggle("hidden", !isMission());
+    evidenceTip.classList.toggle("hidden", !isMission());
+    if (isMission()) {
+      const room = activeLevel.rooms[(stage.room || 1) - 1];
+      const roomNumber = stage.room || 1;
+      roomHud.textContent = "KAMBARYS " + roomNumber + " / " + activeLevel.rooms.length;
+      document.getElementById("sceneSignal").textContent = "● RYŠYS AKTYVUS";
+      document.getElementById("sceneSector").textContent = "SEKTORIUS 0" + roomNumber;
+      document.getElementById("sceneSymbol").textContent = room.symbol || "▣";
+      document.getElementById("sceneRoomName").textContent = room.name;
+      document.getElementById("sceneRoomCaption").textContent = room.caption;
+      sceneViewport.dataset.room = String(roomNumber);
+      updateLives();
+    }
 
     evidenceBoard.innerHTML = "";
     stage.evidence.forEach(item => {
-      const el = document.createElement("article");
-      el.className = "evidence";
-      el.innerHTML = `<div class="type">${item.type}</div><strong>${item.title}</strong><p>${item.text}</p>`;
+      const el = document.createElement(isMission() ? "button" : "article");
+      el.className = "evidence" + (isMission() ? " evidence-flip" : "");
+      if (isMission()) {
+        el.type = "button";
+        el.setAttribute("aria-expanded", "false");
+        const type = document.createElement("div");
+        type.className = "type";
+        type.textContent = item.type;
+        const title = document.createElement("strong");
+        title.textContent = item.title;
+        const detail = document.createElement("p");
+        detail.textContent = "▧ SPAUSK – PERŽIŪRĖTI UŽUOMINĄ";
+        el.append(type, title, detail);
+        el.addEventListener("click", () => {
+          if (el.classList.contains("revealed")) return;
+          el.classList.add("revealed");
+          el.setAttribute("aria-expanded", "true");
+          detail.textContent = item.text;
+          openedEvidence += 1;
+          updateEvidenceGate();
+        });
+      } else {
+        el.innerHTML = `<div class="type">${item.type}</div><strong>${item.title}</strong><p>${item.text}</p>`;
+      }
       evidenceBoard.appendChild(el);
     });
 
@@ -137,10 +223,11 @@
       btn.onclick = () => answer(choice, btn);
       choices.appendChild(btn);
     });
+    updateEvidenceGate();
   }
 
   function answer(choice, btn) {
-    if (locked) return;
+    if (locked || (isMission() && openedEvidence < activeLevel.stages[stageIndex].evidence.length)) return;
     locked = true;
     const all = [...choices.querySelectorAll(".choice")];
     const stage = activeLevel.stages[stageIndex];
@@ -157,41 +244,74 @@
       feedback.className = "feedback good";
       feedback.innerHTML = "<strong>✓ Sprendimas pagrįstas.</strong><br>" + choice.feedback;
     } else {
+      if (isMission()) {
+        lives = Math.max(0, lives - 1);
+        updateLives();
+      }
       btn.classList.add("wrong");
       feedback.className = "feedback bad";
-      feedback.innerHTML = "<strong>× Šita išvada per silpna.</strong><br>" + choice.feedback;
+      feedback.innerHTML = "<strong>× Patikrink savo sprendimą.</strong><br>" + choice.feedback
+        + (isMission() ? "<br><strong>–1 apsaugos skydas.</strong>" : "");
+    }
+    if (isMission() && stage.lesson) {
+      const note = document.createElement("p");
+      note.className = "teaching-note";
+      note.textContent = "AGENTŪROS IŠVADA: " + stage.lesson;
+      feedback.appendChild(note);
     }
     xpHud.textContent = "XP " + xp;
-    nextBtn.textContent = stageIndex === activeLevel.stages.length - 1 ? "Uždaryti bylą →" : "Kitas įrodymas →";
+    nextBtn.textContent = isMission() && lives === 0
+      ? "Peržiūrėti misijos rezultatą →"
+      : (stageIndex === activeLevel.stages.length - 1 ? "Uždaryti bylą →" : "Kitas įrodymas →");
     nextBtn.classList.remove("hidden");
   }
 
   function nextStage() {
+    if (isMission() && lives === 0) {
+      showFinish(true);
+      return;
+    }
     if (stageIndex < activeLevel.stages.length - 1) {
+      const currentRoom = activeLevel.stages[stageIndex].room;
       stageIndex++;
       renderStage();
+      const nextRoom = activeLevel.stages[stageIndex].room;
+      if (isMission() && currentRoom !== nextRoom) {
+        const room = activeLevel.rooms[(nextRoom || 1) - 1];
+        interlude("DURYS ATRAKINTOS · KAMBARYS " + nextRoom,
+          "Perėjai į sektorių „" + room.name + "“. Naujos užuominos jau laukia. Atidžiai patikrink kiekvieną įrodymą.",
+          "Įeiti į kambarį →");
+      }
     } else {
-      showFinish();
+      showFinish(false);
     }
   }
 
-  function showFinish() {
+  function showFinish(failed = false) {
     progressBar.style.width = "100%";
     gameView.classList.add("hidden");
     finishView.classList.remove("hidden");
-    statusChip.textContent = "BYLA UŽDARYTA";
+    statusChip.textContent = failed ? "REIKIA PASTIPRINIMO" : "BYLA UŽDARYTA";
     const total = activeLevel.stages.length;
     const pct = Math.round(correctCount / total * 100);
-    document.getElementById("finishTitle").textContent = activeLevel.title + " – baigta";
-    document.getElementById("finishText").textContent =
-      pct === 100
-        ? "Visuose etapuose iškart pasirinkai geriausiai įrodymais pagrįstą sprendimą."
-        : "Bylą užbaigei. Peržiūrėk paaiškinimus ir, jei reikia, pakartok lygį – tikslas ne spėti, o pagrįsti.";
-    document.getElementById("scoreCard").textContent = `${correctCount} / ${total} pirmu bandymu · ${xp} XP`;
+    document.getElementById("finishTitle").textContent = failed
+      ? "Apsaugos skydai išseko"
+      : (activeLevel.title + " – baigta");
+    document.getElementById("finishText").textContent = failed
+      ? "Agentūros signalas nutrūko. Tu jau gavai naudingų paaiškinimų – grįžk į bylą ir pabandyk dar kartą."
+      : (isMission()
+        ? activeLevel.outro
+        : (pct === 100
+          ? "Visuose etapuose iškart pasirinkai geriausiai įrodymais pagrįstą sprendimą."
+          : "Bylą užbaigei. Peržiūrėk paaiškinimus ir, jei reikia, pakartok lygį – tikslas ne spėti, o pagrįsti."));
+    document.getElementById("scoreCard").textContent = isMission()
+      ? `${correctCount} / ${total} teisingų · ${xp} XP · ${lives} skydai liko`
+      : `${correctCount} / ${total} pirmu bandymu · ${xp} XP`;
     window.scrollTo({top:0,behavior:"smooth"});
   }
 
   function goCatalog() {
+    missionOverlay.classList.add("hidden");
     activeLevel = null;
     gameView.classList.add("hidden");
     finishView.classList.add("hidden");

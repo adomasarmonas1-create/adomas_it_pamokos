@@ -46,11 +46,18 @@
         <div class="case-id" id="caseId"></div>
         <div class="hud">
           <span id="stageHud">1 / 1</span>
+          <span id="roomHud" class="hidden">KAMBARYS 1/4</span>
+          <span id="livesHud" class="hidden">SKYDAI ♥♥♥</span>
           <span id="xpHud">XP 0</span>
         </div>
       </div>
 
       <div class="progress-track"><div id="progressBar"></div></div>
+      <section class="mission-viewport hidden" id="sceneViewport" aria-label="Misijos kambario vaizdas">
+        <div class="mission-sky"><span id="sceneSignal">● RYŠYS AKTYVUS</span><span id="sceneSector">SEKTORIUS 01</span></div>
+        <div class="mission-room-art" aria-hidden="true"><div class="mission-hall"><div class="mission-door"><span id="sceneSymbol">▣</span><span class="mission-lock">PRIEIGA RIBOJAMA</span></div></div></div>
+        <div class="mission-floor-label"><span id="sceneRoomName">Saugumo kambarys</span><span id="sceneRoomCaption">Patikrink įrodymus</span></div>
+      </section>
 
       <section class="case-card">
         <div class="case-kicker" id="caseKicker"></div>
@@ -63,6 +70,7 @@
       <section class="task-card">
         <div class="task-label">SPRENDIMAS</div>
         <h3 id="taskPrompt"></h3>
+        <div id="evidenceTip" class="evidence-tip hidden" aria-live="polite"></div>
         <div class="choices" id="choices"></div>
         <div class="feedback hidden" id="feedback"></div>
         <div class="task-actions">
@@ -83,6 +91,15 @@
       </div>
     </section>
 
+    <div class="mission-overlay hidden" id="missionOverlay" role="dialog" aria-modal="true" aria-labelledby="missionOverlayTitle">
+      <div class="mission-overlay-panel">
+        <div class="overlay-code">KIBERAGENTAI // MISIJOS PERDAVIMAS</div>
+        <div class="overlay-glyph" aria-hidden="true">▣</div>
+        <h2 id="missionOverlayTitle">BYLA NR. 03</h2>
+        <p id="missionOverlayText"></p>
+        <button class="primary-btn" id="missionOverlayButton">Pradėti misiją →</button>
+      </div>
+    </div>
     <footer>
       <span>Duomenys niekur nesiunčiami. Progresas saugomas tik šios sesijos metu.</span>
       <span>Prototype 0.1</span>
