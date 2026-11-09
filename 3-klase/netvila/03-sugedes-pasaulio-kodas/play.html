@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#19172a">
+<title>NETVILA 3 · Sugedęs pasaulio kodas</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="game-shell">
+ <header class="topbar"><div class="logo"><span class="logo-mark">⌘</span><div><small>NUOTYKIŲ LABORATORIJA</small><strong>NETVILA <em>03</em></strong></div></div><div class="level-name"><b>SUGEDĘS PASAULIO KODAS</b><span>3 klasė · Integracinė misija</span></div><div class="top-actions"><button id="menuButton" title="Meniu (Enter)">☰ Meniu</button><button id="muteButton" title="Išjungti / įjungti garsą">♫ Garsas</button></div></header>
+ <section class="playground" id="playground">
+  <canvas id="worldCanvas" width="1120" height="620" aria-label="NETVILOS pasaulis"></canvas>
+  <div class="vignette"></div>
+  <div class="hud hud-player"><div class="avatar" id="hudAvatar">✦</div><div><small>TYRINĖTOJAS</small><b id="heroName">MOSS</b><div class="hearts" id="heroHearts">♥ ♥ ♥</div></div></div>
+  <div class="hud hud-goal"><small>ŠIOS MISIJOS TIKSLAS</small><b id="objective">Rask pasaulio sutrikimus</b><div class="progress-track"><div id="progressBar"></div></div><span id="progressLabel">0 / 5 sutrikimų</span></div>
+  <div class="compass" id="compass">N <span>↑</span></div>
+  <div class="interaction-hint" id="interactHint" hidden><kbd>Z</kbd><span id="interactLabel">Kalbėti</span></div>
+  <div class="toast" id="toast" role="status"></div>
+  <div class="touch-controls"><div class="touch-dpad"><button data-move="up" aria-label="Aukštyn">▲</button><button data-move="left" aria-label="Kairėn">◀</button><button data-move="down" aria-label="Žemyn">▼</button><button data-move="right" aria-label="Dešinėn">▶</button></div><button class="touch-action" id="touchAction">Z · VEIKSMAS</button></div>
+ </section>
+ <footer class="statusbar"><div><span class="status-pip"></span><b id="zoneLabel">PRADŽIOS MIESTELIS</b><span id="subtitle">Atrask, patikrink, ištaisyk.</span></div><div class="hotkeys"><span><kbd>↑ ↓ ← →</kbd> judėti</span><span><kbd>Z</kbd> sąveika</span><span><kbd>X</kbd> atgal</span><span><kbd>ENTER</kbd> meniu</span></div></footer>
+</main>
+<div class="overlay visible" id="startOverlay"><div class="start-card panel"><span class="eyebrow">NETVILA // TREČIA KLASĖ</span><h1>Sugedęs<br><i>pasaulio kodas</i></h1><p>NETVILOS pasaulyje kažkas sumaišė algoritmus, duomenis ir saugumo taisykles. Pasirink tyrinėtoją, surask penkis sutrikimų šaltinius ir atkurk pasaulio branduolį.</p><div class="section-label">PASIRINK VEIKĖJĄ</div><div class="hero-grid" id="heroGrid"></div><button class="primary" id="startButton">PRADĖTI NUOTYKĮ <span>→</span></button><p class="footnote">Žaisk naršyklėje · Duomenys niekur nesiunčiami · Ankstesni lygiai neliečiami</p></div></div>
+<div class="overlay" id="dialogOverlay"><div class="dialog-card panel"><div class="dialog-portrait" id="dialogPortrait"></div><div><div class="eyebrow" id="dialogName">MIRA</div><p id="dialogText"></p><button class="primary small" id="dialogNext">TĘSTI <kbd>Z</kbd></button></div></div></div>
+<div class="overlay" id="battleOverlay"><div class="battle-card panel"><div class="battle-heading"><div><span class="eyebrow" id="battleTag">SUTRIKIMAS 01 / 05</span><h2 id="battleTitle">GLITCH</h2></div><div class="battle-metrics"><div class="enemy-hp-label"><span>PRIEŠO GYVYBĖS</span><strong id="enemyHpText">2 / 2</strong></div><div class="enemy-hp-bar"><div id="enemyHpFill"></div></div></div></div>
+<div class="combat-stage" id="combatStage"><div class="battle-player-hp" id="battlePlayerHp">MOSS ♥ ♥ ♥</div><div class="combat-ambient"></div><div class="battle-hero"><canvas id="battleHeroCanvas" width="160" height="176"></canvas><div class="fight-name" id="battleHeroName">MOSS</div></div><div class="energy-bolt" id="energyBolt"></div><div class="combat-enemy" id="combatEnemy"><canvas id="enemyCanvas" width="210" height="184"></canvas><div class="damage-float" id="damageFloat">−1 HP</div></div><div class="combat-floor"></div><div id="bossDissolve" class="boss-dissolve"></div></div>
+<div class="question-panel" id="questionPanel"><div class="question-label"><span class="diamond">◆</span><span id="questionSkill">ALGORITMŲ MISIJA</span></div><div id="questionContext" class="question-context"></div><h3 id="questionText"></h3><div class="task-body" id="taskBody"></div><div class="answer-list" id="answerList"></div><div class="battle-feedback" id="battleFeedback" hidden></div><div class="battle-buttons"><button id="hintButton" class="secondary">✧ UŽUOMINA</button><button id="submitButton" class="primary" hidden>PATIKRINTI <span>→</span></button><button id="continueButton" class="primary" hidden>TĘSTI <span>→</span></button></div></div></div></div>
+<div class="overlay" id="menuOverlay"><div class="menu-card panel"><span class="eyebrow">NETVILA 03</span><h2>Žaidimo meniu</h2><p>Rodyklės – judėjimas, Z – sąveika, X – uždaryti, Enter – meniu. Sprendžiant užduotis naudok pelę.</p><button class="primary" id="resumeButton">GRĮŽTI Į ŽAIDIMĄ</button><button class="secondary" id="restartButton">PRADĖTI IŠ NAUJO</button></div></div>
+<div class="overlay" id="endOverlay"><div class="end-card panel"><div class="end-sparks" id="endSparks"></div><span class="eyebrow" id="endEyebrow">PASAULIO BRANDUOLYS ATKURTAS</span><h2 id="endTitle">NETVILA IŠGELBĖTA!</h2><p id="endText">CHAOS.EXE išnyko. Visi sutrikimai pašalinti, o NETVILA vėl veikia.</p><div class="results" id="results"></div><div class="reflection"><b>PAGALVOK:</b> Kuri klaida buvo sunkiausia? Kaip ją patikrinai? Ką kitą kartą darytum pirmiausia?</div><button class="primary" id="playAgain">ŽAISTI DAR KARTĄ</button></div></div>
+<script src="tasks.js"></script><script src="game.js"></script>
+</body></html>
