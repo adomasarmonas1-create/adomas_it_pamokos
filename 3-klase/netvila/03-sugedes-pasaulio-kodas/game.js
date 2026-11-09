@@ -24,7 +24,7 @@ const rand=(x,y,s=0)=>{let n=Math.sin(x*127.1+y*311.7+s*74.7)*43758.5453123;retu
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 const dist=(a,b,x,y)=>Math.hypot(a-x,b-y);
 const segDist=(x,y,a,b,c,d)=>{const t=clamp(((x-a)*(c-a)+(y-b)*(d-b))/((c-a)**2+(d-b)**2||1),0,1);return dist(x,y,a+(c-a)*t,b+(d-b)*t)};
-const PATHS=[[[5,24],[10,21]],[[10,21],[11,15]],[[11,15],[12,12]],[[12,12],[14,7]],[[14,7],[15,5]],[[12,12],[18,15]],[[18,15],[22,15]],[[24,15],[29,15]],[[29,15],[31,22]],[[31,22],[32,22]],[[29,15],[34,13]],[[34,13],[36,12]],[[36,12],[38,8]],[[38,8],[39,8]]];
+const PATHS=[[[5,24],[10,21]],[[10,21],[11,15]],[[11,15],[12,12]],[[12,12],[14,7]],[[14,7],[15,5]],[[12,12],[18,15]],[[18,15],[22,15]],[[24,15],[29,15]],[[29,15],[31,22]],[[31,22],[32,22]],[[29,15],[34,13]],[[34,13],[35,10]],[[35,10],[36,10]],[[36,10],[39,8]]];
 function isPath(x,y){return PATHS.some(([a,b])=>segDist(x,y,a[0],a[1],b[0],b[1])<1.65)}
 function isRiver(x,y){return x>=21&&x<=23&&!(y>=14&&y<=16)}
 function isRuin(x,y){return x>=36&&y<=12}
@@ -90,7 +90,7 @@ function drawWorld(now){const t=now/1000;const targetX=clamp(hero.x-VW/2,0,MW*T-
  for(const e of DEFS){if(won.has(e.id))continue;const [sx,sy]=toScreen(e.x,e.y);if(sx< -90||sy< -90||sx>VW+100||sy>VH+90)continue;fill(ctx,sx-25,sy+19,50,7,'#1b294464');sprite(ctx,e,sx-25,sy-35,e.id==='boss'?2.7:2.5,t);const label=e.name;ctx.textAlign='center';ctx.font='900 13px Nunito, sans-serif';ctx.fillStyle='#251d39';ctx.fillRect(sx-(label.length*4.8+13)/2,sy-48,label.length*4.8+13,19);ctx.fillStyle='#ffe8a8';ctx.fillText(label,sx,sy-34);}
  for(const npc of NPCS){const [sx,sy]=toScreen(npc.x,npc.y);drawHero(ctx,sx-16,sy-37,2.7,npc.id==='mira'?3:1,(Math.sin(t*2)>0?1:0));fill(ctx,sx-23,sy-54,46,17,'#20203c');ctx.textAlign='center';ctx.font='900 12px Nunito, sans-serif';ctx.fillStyle='#fff4cf';ctx.fillText(npc.name,sx,sy-41)}
  // Vartai nupiešiami pasaulio koordinatėmis.
- ctx.save();ctx.translate(-camera.x,-camera.y);drawGate(ctx,false);drawGate(ctx,true);if(won.has('bug')&&!key)drawObject(ctx,'chest',16,4);ctx.restore();
+ ctx.save();ctx.translate(-camera.x,-camera.y);drawGate(ctx,false);drawGate(ctx,true);if(key){const xx=16*T,yy=4*T;fill(ctx,xx-13,yy-12,29,19,'#674a3e');fill(ctx,xx-14,yy-19,31,8,'#d6ae73');fill(ctx,xx-10,yy-9,24,10,'#242033');fill(ctx,xx-2,yy-12,7,6,'#f1d782')}ctx.restore();
  const px=Math.round(hero.x-camera.x),py=Math.round(hero.y-camera.y);fill(ctx,px-17,py+11,34,8,'#20394969');drawHero(ctx,px-20,py-49,3.7,heroIdx,Math.sin(hero.stride)>0?1:0);
 }
 function pickInteractable(){let closest=null,d=65;for(const e of DEFS){if(won.has(e.id))continue;const a=dist(hero.x,hero.y,(e.x+.5)*T,(e.y+.5)*T);if(a<d){d=a;closest={kind:'enemy',value:e}}}for(const n of NPCS){const a=dist(hero.x,hero.y,(n.x+.5)*T,(n.y+.5)*T);if(a<d){d=a;closest={kind:'npc',value:n}}}for(const o of SPECIAL){const a=dist(hero.x,hero.y,(o.x+.5)*T,(o.y+.5)*T);if(a<d){d=a;closest={kind:'object',value:o}}}return closest}
