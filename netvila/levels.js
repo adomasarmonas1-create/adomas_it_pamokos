@@ -11,6 +11,8 @@ window.NETVILA_LEVELS = {
     goal: "Sudėtingesni algoritmai, problemos skaidymas, kartojimas, sąlygos ir testavimas.",
     levels: [
       {id:"3-01",title:"Sudėtingesni algoritmai",subtitle:"Game Boy nuotykis: problemos skaidymas, kartojimas, JEI–TAI ir roboto maršrutai.",url:"../3-klase/netvila/01-sudetingesni-algoritmai/",status:"Veikia"},
+      {id:"3-02",title:"Algoritmo klaidų medžiotojai",subtitle:"Stebėk, rask klaidą, pataisyk ir išbandyk dar kartą.",url:"../3-klase/netvila/02-algoritmo-klaidu-medziotojai/",status:"Veikia"},
+      {id:"3-03",title:"Sugedęs pasaulio kodas",subtitle:"Naujas RPG pasaulis · 5 priešai · 38 užduotys · CHAOS.EXE finalas.",url:"../3-klase/netvila/03-sugedes-pasaulio-kodas/",status:"NAUJAS"},
       {id:"3-02",title:"Algoritmo klaidų medžiotojai",subtitle:"Sudaryk, tikrink ir pataisyk roboto komandas.",url:"../3-klase/netvila/02-algoritmo-klaidu-medziotojai/",status:"Veikia"},
       {id:"3-03",title:"Sugedęs pasaulio kodas",subtitle:"Integracinė misija su išsamiais kognityviniais iššūkiais, priešais ir CHAOS.EXE bosu.",url:"../3-klase/netvila/03-sugedes-pasaulio-kodas/",status:"NEW"}
     ]
