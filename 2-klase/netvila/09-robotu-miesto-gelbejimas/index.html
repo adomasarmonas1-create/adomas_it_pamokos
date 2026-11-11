@@ -40,24 +40,47 @@ const linkMission={GLITCH:'algo',LOOP:'debug',BUG:'data',IF_EXE:'privacy',REPEAT
 const heroes=[{name:'NOVA',color:'#58c6ed',symbol:'✦'},{name:'BYTE',color:'#f3a56b',symbol:'◆'},{name:'MOSS',color:'#72d3a0',symbol:'▲'}];
 const missions=[
 {id:'algo',name:'ROBOTŲ MARŠRUTAI',enemy:'NAV-BOT',x:12,y:20,color:'#6be4c5',tasks:[
-{type:'sequence',q:'Įvesk komandas, kad robotas pasiektų stotį.',context:'Tavo robotas stovi apačioje. Reikia: du kartus į dešinę ir vieną kartą į viršų.',answer:['ArrowRight','ArrowRight','ArrowUp'],why:'Tiksli komandų tvarka nuvedė robotą į stotį!'},
-{type:'choice',q:'Kas yra algoritmas?',context:'Pagalvok, kaip robotas supranta, ką jam daryti.',options:['Veiksmų seka','Kompiuterio spalva','Slaptas žodis'],correct:0,why:'Algoritmas – aiški veiksmų seka.'}]},
+{type:'sequence',q:'Įvesk komandas, kad robotas pasiektų stotį.',context:'Maršrutas ilgesnis: → → ↑ ↑ → ↓. Įvesk visas 6 komandas iš eilės.',answer:['ArrowRight','ArrowRight','ArrowUp','ArrowUp','ArrowRight','ArrowDown'],why:'Šešių komandų tvarka nuvedė robotą į stotį!'},
+{type:'choice',q:'Kas yra algoritmas?',context:'Pagalvok, kaip robotas supranta, ką jam daryti.',options:['Veiksmų seka','Kompiuterio spalva','Slaptas žodis'],correct:0,why:'Algoritmas – aiški veiksmų seka.'},
+{type:'route',q:'Nuvesk robotą iki žvaigždės. Saugokis sienų!',context:'Pasirink rodykles ir keliauk mini žemėlapyje. Veikia keli teisingi keliai.',grid:{w:5,h:5,start:[0,4],goal:[4,0],walls:[[1,3],[2,3],[2,1],[3,1]]},why:'Algoritmas teisingas, jei robotas aplenkia sienas ir pasiekia tikslą.'},
+{type:'order',q:'Kokia veiksmų tvarka geriausia?',context:'Robotas nori nuvykti iki užrakintų vartų. Sudėliok žingsnius.',items:['Atverti vartus','Paimti raktą','Prieiti prie vartų','Patikrinti raktą'],answer:['Paimti raktą','Prieiti prie vartų','Patikrinti raktą','Atverti vartus'],why:'Pirmiausia turi raktą, tada prieini prie vartų, patikrini ir atveri.'},
+{type:'choice',q:'Robotas mato uždarytus vartus. Kuri taisyklė tinka?',context:'Vartus galima atverti tik tada, kai turi raktą.',options:['Visada atverk vartus','Pirmiau atverk, paskui ieškok rakto','JEI turi raktą, TAI atverk vartus'],correct:2,why:'JEI–TAI taisyklė patikrina sąlygą prieš veiksmą.'}
+]},
 {id:'debug',name:'KLAIDŲ LABORATORIJA',enemy:'BUG-7',x:11,y:12,color:'#fc9c87',tasks:[
 {type:'choice',q:'Kuris žingsnis sugadintas?',context:'1. EITI →  2. SUKTI ↑  3. EITI PER SIENĄ',options:['Pirmas','Antras','Trečias'],correct:2,why:'Per sieną eiti negalima. Taisome trečią komandą.'},
-{type:'text',q:'Ką turi daryti pataisęs komandą?',context:'Įrašyk žodį: B A N D Y T I',answer:['BANDYTI','IŠBANDYTI','ISBANDYTI'],why:'Taip! Po pataisymo algoritmą reikia išbandyti.'}]},
+{type:'text',q:'Ką turi daryti pataisęs komandą?',context:'Įrašyk žodį, kuris reiškia patikrinti veikimą: B A N D Y T I.',answer:['BANDYTI','IŠBANDYTI','ISBANDYTI'],why:'Po pataisymo algoritmą reikia išbandyti.'},
+{type:'choice',q:'Robotas nesustoja prie raudonos lempos. Kas sugedo?',context:'Komanda: „JEI dega RAUDONA, važiuok toliau“.',options:['Teisinga viskas','Sąlygos veiksmas – reikia sustoti','Reikia išjungti šviesoforą'],correct:1,why:'Esant raudonai šviesai reikia sustoti, o ne važiuoti.'},
+{type:'sequence',q:'Pataisyk neteisingai užrašytą maršrutą.',context:'Teisingas kelias pagal žemėlapio rodykles: ↑ ↑ → → ↓ → ↑. Įvesk VISAS 7 komandas.',answer:['ArrowUp','ArrowUp','ArrowRight','ArrowRight','ArrowDown','ArrowRight','ArrowUp'],why:'Puiku! Visos septynios komandos įrašytos reikiama tvarka.'},
+{type:'route',q:'Rask aplinkkelį, nes tiesus takas užblokuotas.',context:'Robotas pradeda kairėje. Pasiek žvaigždę dešinėje, neatsitrenkdamas į sieną.',grid:{w:5,h:5,start:[0,2],goal:[4,2],walls:[[2,1],[2,2],[2,3],[3,3]]},why:'Aplenkdamas sieną pataisei maršruto klaidą.'}
+]},
 {id:'data',name:'DUOMENŲ CENTRAS',enemy:'DATA-404',x:11,y:6,color:'#f5c97a',tasks:[
 {type:'choice',q:'Kurioje grupėje yra DAUGIAUSIA robotų?',context:'Pažiūrėk į diagramą. A – 3, B – 6, C – 4.',chart:[3,6,4],options:['A grupėje','B grupėje','C grupėje'],correct:1,why:'B grupėje yra 6 robotai. Tai didžiausias skaičius.'},
-{type:'number',q:'Kiek robotų yra iš viso?',context:'Suskaičiuok: A – 3, B – 6, C – 4.',answer:'13',why:'3 + 6 + 4 = 13 robotų.'}]},
+{type:'number',q:'Kiek robotų yra iš viso?',context:'Suskaičiuok: A – 3, B – 6, C – 4.',answer:'13',why:'3 + 6 + 4 = 13 robotų.'},
+{type:'order',q:'Surikiuok robotų grupes nuo MAŽIAUSIOS.',context:'A grupė – 3 robotai, B – 6 robotai, C – 4 robotai.',items:['B: 6','C: 4','A: 3'],answer:['A: 3','C: 4','B: 6'],why:'Nuo mažiausio iki didžiausio: 3, 4, 6.'},
+{type:'choice',q:'Kuris teiginys tikslus pagal duomenis?',context:'Kelionės į mokyklą: pėsčiomis 8, dviračiu 4, automobiliu 6.',options:['Dviračiu atvyko daugiausia','Pėsčiomis atvyko 2 daugiau nei automobiliu','Automobiliu atvyko 8'],correct:1,why:'8 − 6 = 2. Pėsčiomis atvyko dviem daugiau.'},
+{type:'number',q:'Kiek dar robotų reikia C grupei, kad būtų tiek pat kiek B?',context:'B grupėje 6, C grupėje 4 robotai. Įrašyk trūkstamą skaičių.',answer:'2',why:'C grupei trūksta 2 robotų: 4 + 2 = 6.'}
+]},
 {id:'privacy',name:'SAUGUMO TERMINALAS',enemy:'PHISH-0',x:28,y:15,color:'#8bc6ff',tasks:[
 {type:'choice',q:'Nepažįstamasis prašo tavo namų adreso. Ką darysi?',context:'Žaidimo pokalbyje gavai žinutę iš nepažįstamo žmogaus.',options:['Nusiųsiu adresą','Nesidalinsiu ir pasakysiu suaugusiajam','Parašysiu slaptažodį'],correct:1,why:'Namų adresas privatus. Saugiausia – nesidalinti ir pasitarti.'},
-{type:'choice',q:'Kuri informacija yra privati?',context:'Rinkis vieną iš trijų.',options:['Mėgstama spalva','Orų prognozė','Mano slaptažodis'],correct:2,why:'Slaptažodis turi likti paslaptyje.'}]},
+{type:'choice',q:'Kuri informacija yra privati?',context:'Rinkis vieną iš trijų.',options:['Mėgstama spalva','Orų prognozė','Mano slaptažodis'],correct:2,why:'Slaptažodis turi likti paslaptyje.'},
+{type:'choice',q:'Draugas prašo nusiųsti kito vaiko nuotrauką. Ką daryti?',context:'Nuotraukoje matomas kitas žmogus.',options:['Pirmiausia paklausti, ar jis sutinka','Įkelti be leidimo','Nusiųsti visiems klasėje'],correct:0,why:'Prieš dalijantis kito žmogaus nuotrauka reikia jo sutikimo.'},
+{type:'order',q:'Sudėliok saugų veiksmų planą.',context:'Gavai keistą žinutę su nepažįstama nuoroda.',items:['Pasitarti su suaugusiuoju','Atpažinti įtartiną žinutę','Neatidaryti nuorodos'],answer:['Atpažinti įtartiną žinutę','Neatidaryti nuorodos','Pasitarti su suaugusiuoju'],why:'Pirmiausia atpažįstame pavojų, nespaudžiame ir pasitariame.'},
+{type:'text',q:'Ko reikia prieš dalijantis draugo nuotrauka?',context:'Įrašyk vieną žodį: LEIDIMAS arba SUTIKIMAS.',answer:['LEIDIMAS','SUTIKIMAS'],why:'Be žmogaus sutikimo nuotraukos platinti negalima.'}
+]},
 {id:'code',name:'SLAPTO KODO STOTIS',enemy:'LOCK-9',x:34,y:21,color:'#cd9bfa',tasks:[
 {type:'code',q:'Atrakink stotį trijų skaitmenų kodu.',context:'Pirmas skaičius – 4. Antras – 2. Trečias – 1. Įrašyk kodą arba naudok pelės mygtukus.',answer:'421',why:'Kodas 421 atidarė stotį.'},
-{type:'sequence',q:'Kokia komanda atidaro paskutinį vartų tunelį?',context:'Rodyklių kombinacija: AUKŠTYN, DEŠINĖN, ŽEMYN.',answer:['ArrowUp','ArrowRight','ArrowDown'],why:'Komandų seka suveikė. Tunelis atrakintas!'}]},
+{type:'sequence',q:'Kokia komanda atidaro paskutinį vartų tunelį?',context:'Įvesk 7 komandų kombinaciją: ↑ → ↓ ↓ ← ↑ →.',answer:['ArrowUp','ArrowRight','ArrowDown','ArrowDown','ArrowLeft','ArrowUp','ArrowRight'],why:'Septynių komandų kombinacija atrakino tunelį!'},
+{type:'code',q:'Apskaičiuok naują trijų skaitmenų kodą.',context:'Pirmas skaičius – 2 + 3. Antras – 8 − 6. Trečias – 1 + 2. Suvesk juos be tarpų.',answer:'523',why:'5, 2 ir 3 sudaro kodą 523.'},
+{type:'route',q:'Apeik skaitmeninius spąstus ir pasiek vartus.',context:'Savo komandų seka nuvesk robotą iki žvaigždės. Sienų liesti negalima.',grid:{w:5,h:5,start:[0,0],goal:[4,4],walls:[[1,0],[1,1],[3,2],[2,3]]},why:'Pasirinkai teisingą kelią, todėl tunelis nebeužblokuotas.'},
+{type:'order',q:'Kaip turi veikti užrakintos durys?',context:'Sudėliok veiksmus nuo pirmo iki paskutinio.',items:['Atverti duris','Suvesti kodą','Patikrinti, ar kodas teisingas'],answer:['Suvesti kodą','Patikrinti, ar kodas teisingas','Atverti duris'],why:'Durys atidaromos tik patikrinus suvestą kodą.'}
+]},
 {id:'boss',name:'MIESTO BRANDUOLYS',enemy:'GLITCH.EXE',x:38,y:6,color:'#ee82db',tasks:[
 {type:'choice',q:'Robotas nuėjo ne ten. Ką darysi?',context:'Miesto branduolys laukia pirmojo sprendimo.',options:['Tikrinsiu komandų seką','Spausiu atsitiktinius mygtukus','Paliksiu klaidą'],correct:0,why:'Tikrinant seką randame klaidą.'},
 {type:'number',q:'Duomenų skydelyje: 4 robotai + 3 robotai. Kiek jų iš viso?',context:'Įrašyk vieną skaičių.',answer:'7',why:'4 + 3 = 7 robotai.'},
-{type:'choice',q:'Gauni įtartiną nuorodą. Koks saugus sprendimas?',context:'Tai paskutinė GLITCH.EXE gynyba!',options:['Spausiu nuorodą','Persiųsiu draugams','Nespausiu ir pasitarsiu su suaugusiuoju'],correct:2,why:'Saugūs veiksmai išjungia paskutinę sistemos klaidą!'}]}
+{type:'choice',q:'Gauni įtartiną nuorodą. Koks saugus sprendimas?',context:'Tai paskutinė GLITCH.EXE gynyba!',options:['Spausiu nuorodą','Persiųsiu draugams','Nespausiu ir pasitarsiu su suaugusiuoju'],correct:2,why:'Saugūs veiksmai išjungia paskutinę sistemos klaidą!'},
+{type:'sequence',q:'Atkurk 8 branduolio komandas.',context:'Galutinis užraktas. Įvesk: ↑ ↑ → ↓ → → ↑ ←. Atidžiai tikrink kiekvieną paspaudimą.',answer:['ArrowUp','ArrowUp','ArrowRight','ArrowDown','ArrowRight','ArrowRight','ArrowUp','ArrowLeft'],why:'Aštuonios teisingos komandos išjungė dar vieną GLITCH.EXE skydą!'},
+{type:'route',q:'Paskutinis išbandymas: pasiek centrinį branduolį!',context:'Suplanuok savo maršrutą. Tinkami visi saugūs keliai iki žvaigždės.',grid:{w:5,h:5,start:[0,4],goal:[4,0],walls:[[1,4],[1,2],[2,2],[3,1]]},why:'Tu sėkmingai pasiekei branduolį. GLITCH.EXE išjungiamas!'}
+]}
 ];
 let heroIdx=0,hero='NOVA',pos={x:5.5*T,y:23*T,vx:0,vy:0},cam={x:0,y:0},animFrame=0,lives=5,done=new Set(),defeated={},checkpoint=false,hasKey=false,chestOpen=false,secretOpen=false,mode='menu',active=null,step=0,answered=false,sequence=[],keys={},last=0,frame=0,toastTimer=null,errors=0,continued=false;let dash={key:'',time:0},speedRun='';
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
