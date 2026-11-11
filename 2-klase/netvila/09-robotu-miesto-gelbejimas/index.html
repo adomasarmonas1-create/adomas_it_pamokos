@@ -125,6 +125,8 @@ function moveSmooth(dx,dy,dt){
    checkpoint=true;lives=5;store();hud();toast('✦ SAVE POINT! Įveikta tilto perėja išsaugota.');
  }
 }
+function currentNear(){let closest=null,d=50;for(const [id,m]of Object.entries(markers)){if((enemyIds.includes(id)||id==='CHAOS')&&defeated[id])continue;if(id==='CHEST'&&chestOpen||id==='SECRET'&&secretOpen)continue;let n=Math.hypot(pos.x-(m.x+.5)*T,pos.y-(m.y+.5)*T);if(n<d){d=n;closest=id}}return closest}
+
 function nearest(){const k=currentNear();return linkMission[k]?missions.find(m=>m.id===linkMission[k]):null}
 function interact(){
  if(mode!=='world')return;const k=currentNear();
