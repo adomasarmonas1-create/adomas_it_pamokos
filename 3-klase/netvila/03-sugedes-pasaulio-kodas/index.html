@@ -217,6 +217,14 @@ if(!bridgeOpen()){const px=19*T-cam.x,py=14*T-cam.y;drawRect(px,py,64,64,'#513d4
 // boss gate
 {const px=37*T-cam.x,py=12*T-cam.y;if(!bossOpen()){drawRect(px,py-10,32,42,'#352844');drawRect(px+6,py-13,20,39,'#77406a');drawRect(px+12,py+5,8,13,'#e8b3dd')}else{drawRect(px,py,32,6,'#eec2df')}}
 houses.forEach(drawHouse);trees.forEach(a=>drawTree(a.x,a.y));drawEntrances(t);
+{const sx=22*T-cam.x,sy=14*T-cam.y;
+ drawRect(sx+7,sy+4,4,28,'#654b41');
+ drawRect(sx+11,sy+4,20,15,checkpoint?'#ffdd82':'#6f8198');
+ drawRect(sx+14,sy+7,11,5,checkpoint?'#ffffff':'#c5d4de');
+ ctx.textAlign='center';ctx.font='900 9px monospace';ctx.fillStyle=checkpoint?'#ffefa8':'#b6c4d9';
+ ctx.fillText(checkpoint?'SAVED':'SAVE',sx+19,sy-3);ctx.textAlign='left';
+}
+
 // town decorations
 for(let [x,y] of [[4,21],[7,20],[9,22],[15,18],[10,8],[25,17]]){let xx=x*T-cam.x,yy=y*T-cam.y;drawRect(xx+10,yy+11,4,20,'#76553a');drawRect(xx+4,yy+5,18,10,'#efcf83');drawRect(xx+7,yy+8,12,3,'#b18b59')}
 const chest=markers.CHEST;drawChest(chest,chestOpen);drawChest(markers.SECRET,secretOpen);
